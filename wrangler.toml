@@ -1,4 +1,4 @@
-name = "driver-desk"
+name = "dddddd"
 main = "src/index.ts"
 compatibility_date = "2026-10-09"
 compatibility_flags = ["nodejs_compat"]
@@ -17,7 +17,7 @@ database_id = "335aaa55-9d2e-48a8-849d-3309530983f5"
 migrations_dir = "migrations"
 
 [vars]
-APP_URL = "http://localhost:8787"
+APP_URL = "https://dddddd.muslimsolokhiddin.workers.dev"
 # The values below are placeholders so `wrangler types` can see these names.
 # They are NOT real secrets. Real values go in .dev.vars (local) or are set
 # with `wrangler secret put <NAME>` (deployed) — see README.md.
