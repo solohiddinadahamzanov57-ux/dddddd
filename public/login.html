@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log in – Driver Desk</title>
+  <link rel="stylesheet" href="/css/app.css" />
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="panel auth-card">
+      <div class="brand">
+        <span class="highway-sign">🚚 Driver Desk</span>
+      </div>
+      <h2>Log in</h2>
+      <form id="login-form">
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" required autocomplete="current-password" />
+        </div>
+        <p class="error-text" id="error"></p>
+        <button class="btn btn-primary" type="submit" style="width:100%" id="submit-btn">Log in</button>
+      </form>
+      <div class="divider">or</div>
+      <button class="btn btn-ghost" id="google-btn" style="width:100%">Sign in with Google</button>
+      <p class="switch-link">
+        <a href="/forgot-password.html">Forgot your password?</a>
+      </p>
+      <p class="switch-link">
+        Don't have an account? <a href="/signup.html">Sign up</a>
+      </p>
+    </div>
+  </div>
+  <script src="/js/auth-pages.js"></script>
+  <script>
+    DriverDeskAuth.wireSignIn({
+      formId: "login-form",
+      submitBtnId: "submit-btn",
+      errorId: "error",
+      googleBtnId: "google-btn",
+    });
+  </script>
+</body>
+</html>

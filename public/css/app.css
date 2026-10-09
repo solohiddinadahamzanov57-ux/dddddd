@@ -1,0 +1,428 @@
+@import url("https://fonts.googleapis.com/css2?family=Overpass:wght@400;500;600;700;800&family=Overpass+Mono:wght@400;600&display=swap");
+
+:root {
+  --highway-green: #0a5c36;
+  --highway-green-dark: #063f24;
+  --highway-yellow: #ffd200;
+  --highway-yellow-dark: #e0b500;
+  --bg: #f4f6f4;
+  --panel: #ffffff;
+  --ink: #16241c;
+  --ink-soft: #52604f;
+  --border: #d9e0d6;
+  --danger: #c23b3b;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Overpass", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+a {
+  color: var(--highway-green);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+h1, h2, h3 {
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.4em;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.65em 1.2em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.05s ease, filter 0.15s ease;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn-primary {
+  background: var(--highway-green);
+  color: #fff;
+}
+.btn-primary:hover {
+  filter: brightness(1.08);
+}
+.btn-accent {
+  background: var(--highway-yellow);
+  color: var(--highway-green-dark);
+}
+.btn-accent:hover {
+  filter: brightness(1.05);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--highway-green);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:hover {
+  border-color: var(--highway-green);
+}
+.btn-sm {
+  padding: 0.35em 0.8em;
+  font-size: 0.85rem;
+}
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  margin-bottom: 1em;
+}
+.field label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+.field input,
+.field select,
+.field textarea {
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6em 0.75em;
+  background: #fff;
+  color: var(--ink);
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--highway-green);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin: 0.3em 0 0;
+  min-height: 1.2em;
+}
+
+.highway-sign {
+  background: var(--highway-green);
+  color: #fff;
+  border: 3px solid #fff;
+  outline: 3px solid var(--highway-green-dark);
+  border-radius: 6px;
+  padding: 0.5em 0.9em;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+/* ---- Dash bar: how much lead info is filled vs missing ---- */
+.dash-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+}
+.dash-bar-track {
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--highway-yellow);
+  overflow: hidden;
+  border: 1px solid var(--highway-yellow-dark);
+}
+.dash-bar-fill {
+  height: 100%;
+  background: var(--highway-green);
+  border-radius: 999px 0 0 999px;
+  transition: width 0.3s ease;
+}
+.dash-bar-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.auth-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+}
+.auth-card .brand {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.auth-card .switch-link {
+  text-align: center;
+  margin-top: 1em;
+  font-size: 0.95rem;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  margin: 1.2em 0;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ---- Dashboard shell ---- */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+.app-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: var(--highway-green);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.app-topbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.app-main {
+  padding: 1.25rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.summary-card {
+  padding: 1rem;
+}
+.summary-card .num {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--highway-green);
+}
+.summary-card .label {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+.toolbar input[type="search"] {
+  flex: 1;
+  min-width: 180px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 0.55em 0.8em;
+}
+.toolbar select {
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 0.55em 0.8em;
+  background: #fff;
+}
+.chip {
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  padding: 0.3em 0.9em;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fff;
+  color: var(--ink-soft);
+}
+.chip.active {
+  background: var(--highway-green);
+  color: #fff;
+  border-color: var(--highway-green);
+}
+
+.lead-card {
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.lead-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.lead-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.lead-meta {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.status-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25em 0.7em;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.status-new { background: #e8f0ec; color: var(--highway-green-dark); }
+.status-contacted { background: #fff6d8; color: #7a5c00; }
+.status-qualified { background: #e3f0ff; color: #1a4b8c; }
+.status-scheduled { background: #f1e6ff; color: #5a2d9c; }
+.status-hired { background: #dff5e3; color: #176b36; }
+.status-not_interested { background: #f0f0f0; color: #666; }
+.status-lost { background: #fde8e8; color: #a32e2e; }
+
+.lead-actions {
+  display: flex;
+  gap: 0.5em;
+  flex-wrap: wrap;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--ink-soft);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 14, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 100;
+}
+.modal {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.hidden {
+  display: none !important;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 1rem;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 0.6em 1em;
+  font-weight: 700;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+.tab-btn.active {
+  color: var(--highway-green);
+  border-color: var(--highway-green);
+}
+
+.template-item {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+@media (max-width: 640px) {
+  .app-main {
+    padding: 0.85rem;
+  }
+  .lead-card-top {
+    flex-direction: column;
+  }
+  .app-topbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .app-topbar #user-email {
+    display: none;
+  }
+}
+
+.btn {
+  white-space: nowrap;
+}

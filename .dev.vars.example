@@ -1,0 +1,15 @@
+# Copy this file to .dev.vars for local development (.dev.vars is gitignored
+# and never committed — it holds real secrets). wrangler dev loads it
+# automatically and these override the placeholder values in wrangler.toml.
+
+# Generate with: openssl rand -base64 32
+BETTER_AUTH_SECRET=
+
+# Optional — leave blank to disable "Sign in with Google" locally.
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Optional — leave blank to skip sending real emails locally (reset-password
+# requests still work, the email is just logged to the terminal instead).
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=onboarding@resend.dev

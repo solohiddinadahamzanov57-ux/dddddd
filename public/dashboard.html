@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard – Driver Desk</title>
+  <link rel="stylesheet" href="/css/app.css" />
+</head>
+<body>
+  <div class="app-shell" style="flex-direction: column;">
+    <div class="app-topbar">
+      <div class="brand">🚚 Driver Desk</div>
+      <div style="display:flex; align-items:center; gap: 1rem;">
+        <span id="user-email" style="font-size: 0.9rem; opacity: 0.9;"></span>
+        <button class="btn btn-accent btn-sm" id="logout-btn">Log out</button>
+      </div>
+    </div>
+
+    <div class="app-main">
+      <div class="summary-row">
+        <div class="panel summary-card">
+          <div class="num" id="summary-total">0</div>
+          <div class="label">Total leads</div>
+        </div>
+        <div class="panel summary-card">
+          <div class="num" id="summary-due">0</div>
+          <div class="label">Due today</div>
+        </div>
+        <div class="panel summary-card" style="grid-column: span 2;">
+          <div class="label" style="margin-bottom: 0.5em;">Info completeness</div>
+          <div class="dash-bar">
+            <div class="dash-bar-track"><div class="dash-bar-fill" id="dash-fill" style="width:0%"></div></div>
+            <div class="dash-bar-label" id="dash-label">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="leads">Leads</button>
+        <button class="tab-btn" data-tab="templates">Templates</button>
+        <button class="tab-btn" data-tab="fields">Custom fields</button>
+      </div>
+
+      <section id="tab-leads">
+        <div class="toolbar">
+          <input type="search" id="search-input" placeholder="Search name, phone, email, company…" />
+          <select id="status-filter">
+            <option value="">All statuses</option>
+            <option value="new">New</option>
+            <option value="contacted">Contacted</option>
+            <option value="qualified">Qualified</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="hired">Hired</option>
+            <option value="not_interested">Not interested</option>
+            <option value="lost">Lost</option>
+          </select>
+          <button class="chip" id="due-today-chip">Due today</button>
+          <button class="btn btn-primary" id="add-lead-btn">+ Add lead</button>
+        </div>
+        <div id="leads-list"></div>
+      </section>
+
+      <section id="tab-templates" class="hidden">
+        <div class="tabs" style="border-bottom: none; margin-bottom: 0.5rem;">
+          <button class="tab-btn active" data-subtab="info">Info templates</button>
+          <button class="tab-btn" data-subtab="message">Message templates</button>
+        </div>
+        <div id="subtab-info">
+          <div class="toolbar"><button class="btn btn-primary btn-sm" id="add-info-template-btn">+ Add info template</button></div>
+          <div id="info-templates-list"></div>
+        </div>
+        <div id="subtab-message" class="hidden">
+          <div class="toolbar"><button class="btn btn-primary btn-sm" id="add-message-template-btn">+ Add message template</button></div>
+          <div id="message-templates-list"></div>
+        </div>
+      </section>
+
+      <section id="tab-fields" class="hidden">
+        <p style="color: var(--ink-soft);">Custom fields show up on every lead and count toward the completeness bar above.</p>
+        <div class="toolbar"><button class="btn btn-primary btn-sm" id="add-field-btn">+ Add custom field</button></div>
+        <div id="fields-list"></div>
+      </section>
+    </div>
+  </div>
+
+  <div id="modal-root"></div>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

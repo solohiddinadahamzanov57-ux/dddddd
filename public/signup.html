@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign up – Driver Desk</title>
+  <link rel="stylesheet" href="/css/app.css" />
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="panel auth-card">
+      <div class="brand">
+        <span class="highway-sign">🚚 Driver Desk</span>
+      </div>
+      <h2>Create your account</h2>
+      <form id="signup-form">
+        <div class="field">
+          <label for="name">Your name</label>
+          <input id="name" type="text" required autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" required minlength="8" autocomplete="new-password" />
+        </div>
+        <p class="error-text" id="error"></p>
+        <button class="btn btn-primary" type="submit" style="width:100%" id="submit-btn">Sign up</button>
+      </form>
+      <div class="divider">or</div>
+      <button class="btn btn-ghost" id="google-btn" style="width:100%">Sign up with Google</button>
+      <p class="switch-link">
+        Already have an account? <a href="/login.html">Log in</a>
+      </p>
+    </div>
+  </div>
+  <script src="/js/auth-pages.js"></script>
+  <script>
+    DriverDeskAuth.wireSignUp({
+      formId: "signup-form",
+      submitBtnId: "submit-btn",
+      errorId: "error",
+      googleBtnId: "google-btn",
+    });
+  </script>
+</body>
+</html>
