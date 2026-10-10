@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { createAuth } from "./auth";
 import { requireAuth, type AuthedVars } from "./middleware/auth";
 import { fieldsRoute } from "./routes/fields";
+import { importRoute } from "./routes/import";
 import { leadsRoute } from "./routes/leads";
 import { meRoute } from "./routes/me";
 import { infoTemplatesRoute, messageTemplatesRoute } from "./routes/templates";
@@ -18,6 +19,7 @@ app.all("/api/auth/*", (c) => {
 const api = new Hono<{ Bindings: Env; Variables: AuthedVars }>();
 api.use("*", requireAuth);
 api.route("/leads", leadsRoute);
+api.route("/import", importRoute);
 api.route("/custom-fields", fieldsRoute);
 api.route("/info-templates", infoTemplatesRoute);
 api.route("/message-templates", messageTemplatesRoute);
