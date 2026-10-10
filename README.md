@@ -3,7 +3,29 @@
 A lead manager for truck driver recruiters. Rebuilt from a claude.ai prototype
 into a real, deployable website — free to run and free to build with.
 
-## Status: Phase 1 complete
+## Status: Phase 1 complete + lead import & CDL / medical photos
+
+**Import leads** (⬆ Import leads button on the dashboard) accepts Excel /
+CSV / ODS, Word (.docx), PDF (text or scanned), photos/screenshots, and pasted
+text. Spreadsheets are matched column-by-column in the browser (by header and
+by what the values look like — phone numbers, emails, state codes, names), and
+the user can re-assign any column. Everything else is read by **Workers AI**
+(`src/routes/import.ts`, model `@cf/meta/llama-4-scout-17b-16e-instruct`)
+which pulls out name, phone, state, email, CDL and medical card info. Rows are
+reviewed and editable before saving; duplicates (same phone or email) are
+unchecked automatically.
+
+**CDL / medical card photos** — each lead has a "📎 CDL / Med photos" button.
+Photos are shrunk in the browser and stored in D1 (`lead_documents` table,
+scoped by user like everything else).
+
+Workers AI free allowance: 10,000 "neurons"/day on the Workers Free plan —
+roughly a few hundred photo/PDF reads a day. Spreadsheets don't use AI at all.
+If the allowance runs out the importer falls back to basic pattern matching
+for text and tells you; it never charges anything.
+
+New migration: `migrations/0002_import_and_documents.sql` — apply it with
+`npm run db:migrate:remote` before deploying this version.
 
 **Phase 1 — Login + dashboard + leads (no AI, no payments).** Done and
 tested locally. Phases 2–4 (AI-assisted import, Stripe subscriptions, public
