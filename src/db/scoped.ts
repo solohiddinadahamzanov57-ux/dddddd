@@ -1,11 +1,54 @@
 import type {
   CallLog,
   CustomField,
+  DocumentKind,
   InfoTemplate,
   Lead,
+  LeadDocument,
+  LeadDocumentMeta,
   LeadStatus,
   MessageTemplate,
 } from "../lib/types";
+
+export interface NewLeadInput {
+  name: string;
+  phone?: string | null;
+  email?: string | null;
+  company?: string | null;
+  state?: string | null;
+  cdl?: string | null;
+  medical_card?: string | null;
+  status?: LeadStatus;
+  source?: string | null;
+  notes?: string | null;
+  custom_data?: Record<string, unknown>;
+  next_follow_up_at?: string | null;
+}
+
+const LEAD_COLUMNS = [
+  "id",
+  "user_id",
+  "name",
+  "phone",
+  "email",
+  "company",
+  "state",
+  "cdl",
+  "medical_card",
+  "status",
+  "source",
+  "notes",
+  "custom_data",
+  "next_follow_up_at",
+  "last_contacted_at",
+  "created_at",
+  "updated_at",
+] as const;
+
+const INSERT_LEAD_SQL = `INSERT INTO leads (${LEAD_COLUMNS.join(", ")}) VALUES (${LEAD_COLUMNS.map(() => "?").join(", ")})`;
+
+const DOC_META_COLUMNS =
+  "id, user_id, lead_id, kind, file_name, mime_type, size, created_at";
 
 /**
  * The only way the rest of the app is allowed to touch leads, custom_fields,
@@ -30,6 +73,29 @@ export function scopedDb(db: D1Database, userId: string) {
     return row ?? null;
   };
 
+  const buildLead = (input: NewLeadInput): Lead => {
+    const ts = now();
+    return {
+      id: newId(),
+      user_id: userId,
+      name: input.name,
+      phone: input.phone ?? null,
+      email: input.email ?? null,
+      company: input.company ?? null,
+      state: input.state ?? null,
+      cdl: input.cdl ?? null,
+      medical_card: input.medical_card ?? null,
+      status: input.status ?? "new",
+      source: input.source ?? null,
+      notes: input.notes ?? null,
+      custom_data: JSON.stringify(input.custom_data ?? {}),
+      next_follow_up_at: input.next_follow_up_at ?? null,
+      last_contacted_at: null,
+      created_at: ts,
+      updated_at: ts,
+    };
+  };
+
   return {
     leads: {
       async list(): Promise<Lead[]> {
@@ -44,59 +110,28 @@ export function scopedDb(db: D1Database, userId: string) {
 
       get: getLead,
 
-      async create(input: {
-        name: string;
-        phone?: string | null;
-        email?: string | null;
-        company?: string | null;
-        status?: LeadStatus;
-        source?: string | null;
-        notes?: string | null;
-        custom_data?: Record<string, unknown>;
-        next_follow_up_at?: string | null;
-      }): Promise<Lead> {
-        const id = newId();
-        const ts = now();
-        const lead: Lead = {
-          id,
-          user_id: userId,
-          name: input.name,
-          phone: input.phone ?? null,
-          email: input.email ?? null,
-          company: input.company ?? null,
-          status: input.status ?? "new",
-          source: input.source ?? null,
-          notes: input.notes ?? null,
-          custom_data: JSON.stringify(input.custom_data ?? {}),
-          next_follow_up_at: input.next_follow_up_at ?? null,
-          last_contacted_at: null,
-          created_at: ts,
-          updated_at: ts,
-        };
+      async create(input: NewLeadInput): Promise<Lead> {
+        const lead = buildLead(input);
         await db
-          .prepare(
-            `INSERT INTO leads
-              (id, user_id, name, phone, email, company, status, source, notes, custom_data, next_follow_up_at, last_contacted_at, created_at, updated_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          )
-          .bind(
-            lead.id,
-            lead.user_id,
-            lead.name,
-            lead.phone,
-            lead.email,
-            lead.company,
-            lead.status,
-            lead.source,
-            lead.notes,
-            lead.custom_data,
-            lead.next_follow_up_at,
-            lead.last_contacted_at,
-            lead.created_at,
-            lead.updated_at,
-          )
+          .prepare(INSERT_LEAD_SQL)
+          .bind(...LEAD_COLUMNS.map((col) => lead[col]))
           .run();
         return lead;
+      },
+
+      /**
+       * Inserts many leads in one D1 batch (one round trip). Used by the
+       * importer. Callers should keep batches modest (the route caps at 100).
+       */
+      async createMany(inputs: NewLeadInput[]): Promise<Lead[]> {
+        if (inputs.length === 0) return [];
+        const leads = inputs.map(buildLead);
+        await db.batch(
+          leads.map((lead) =>
+            db.prepare(INSERT_LEAD_SQL).bind(...LEAD_COLUMNS.map((col) => lead[col])),
+          ),
+        );
+        return leads;
       },
 
       /** Returns the updated row, or null if it doesn't exist or isn't this user's. */
@@ -109,6 +144,9 @@ export function scopedDb(db: D1Database, userId: string) {
             | "phone"
             | "email"
             | "company"
+            | "state"
+            | "cdl"
+            | "medical_card"
             | "status"
             | "source"
             | "notes"
@@ -377,6 +415,92 @@ export function scopedDb(db: D1Database, userId: string) {
         const result = await db
           .prepare(`DELETE FROM message_templates WHERE user_id = ? AND id = ?`)
           .bind(userId, id)
+          .run();
+        return (result.meta?.changes ?? 0) > 0;
+      },
+    },
+
+    documents: {
+      /** Metadata for every document of this user, for badges on lead cards. */
+      async listAllMeta(): Promise<LeadDocumentMeta[]> {
+        const { results } = await db
+          .prepare(
+            `SELECT ${DOC_META_COLUMNS} FROM lead_documents WHERE user_id = ? ORDER BY created_at ASC`,
+          )
+          .bind(userId)
+          .all<LeadDocumentMeta>();
+        return results;
+      },
+
+      async listForLead(leadId: string): Promise<LeadDocumentMeta[]> {
+        const { results } = await db
+          .prepare(
+            `SELECT ${DOC_META_COLUMNS} FROM lead_documents WHERE user_id = ? AND lead_id = ? ORDER BY created_at ASC`,
+          )
+          .bind(userId, leadId)
+          .all<LeadDocumentMeta>();
+        return results;
+      },
+
+      async get(leadId: string, id: string): Promise<LeadDocument | null> {
+        const row = await db
+          .prepare(
+            `SELECT * FROM lead_documents WHERE user_id = ? AND lead_id = ? AND id = ?`,
+          )
+          .bind(userId, leadId, id)
+          .first<LeadDocument>();
+        return row ?? null;
+      },
+
+      /** Returns null if the lead doesn't exist or isn't this user's. */
+      async create(input: {
+        lead_id: string;
+        kind: DocumentKind;
+        file_name?: string | null;
+        mime_type: string;
+        size: number;
+        data: string;
+      }): Promise<LeadDocumentMeta | null> {
+        const lead = await getLead(input.lead_id);
+        if (!lead) return null;
+        const doc: LeadDocument = {
+          id: newId(),
+          user_id: userId,
+          lead_id: input.lead_id,
+          kind: input.kind,
+          file_name: input.file_name ?? null,
+          mime_type: input.mime_type,
+          size: input.size,
+          data: input.data,
+          created_at: now(),
+        };
+        await db
+          .prepare(
+            `INSERT INTO lead_documents (id, user_id, lead_id, kind, file_name, mime_type, size, data, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          )
+          .bind(
+            doc.id,
+            doc.user_id,
+            doc.lead_id,
+            doc.kind,
+            doc.file_name,
+            doc.mime_type,
+            doc.size,
+            doc.data,
+            doc.created_at,
+          )
+          .run();
+        const { data: _omit, ...meta } = doc;
+        return meta;
+      },
+
+      async remove(leadId: string, id: string): Promise<boolean> {
+        const result = await db
+          .prepare(
+            `DELETE FROM lead_documents WHERE user_id = ? AND lead_id = ? AND id = ?`,
+          )
+          .bind(userId, leadId, id)
           .run();
         return (result.meta?.changes ?? 0) > 0;
       },

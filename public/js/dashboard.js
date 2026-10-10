@@ -62,10 +62,11 @@
 
   const modalRoot = document.getElementById("modal-root");
 
-  function openModal(html) {
-    modalRoot.innerHTML = `<div class="modal-backdrop" id="modal-backdrop"><div class="modal">${html}</div></div>`;
+  function openModal(html, opts) {
+    const wide = opts && opts.wide ? " modal-wide" : "";
+    modalRoot.innerHTML = `<div class="modal-backdrop" id="modal-backdrop"><div class="modal${wide}">${html}</div></div>`;
     document.getElementById("modal-backdrop").addEventListener("click", (e) => {
-      if (e.target.id === "modal-backdrop") closeModal();
+      if (e.target.id === "modal-backdrop" && !(opts && opts.sticky)) closeModal();
     });
   }
 
@@ -150,7 +151,7 @@
     if (state.filters.q) {
       const q = state.filters.q.toLowerCase();
       list = list.filter((l) =>
-        [l.name, l.phone, l.email, l.company, l.notes].filter(Boolean).some((v) => v.toLowerCase().includes(q)),
+        [l.name, l.phone, l.email, l.company, l.state, l.cdl, l.notes].filter(Boolean).some((v) => v.toLowerCase().includes(q)),
       );
     }
     return list;
@@ -160,19 +161,29 @@
     const list = filteredLeads();
     const el = document.getElementById("leads-list");
     if (list.length === 0) {
-      el.innerHTML = `<div class="empty-state panel">No leads match. <br/><button class="btn btn-primary" style="margin-top:1em" id="empty-add-btn">+ Add your first lead</button></div>`;
+      el.innerHTML = `<div class="empty-state panel">No leads match. <br/>
+        <button class="btn btn-primary" style="margin-top:1em" id="empty-add-btn">+ Add your first lead</button>
+        <button class="btn btn-accent" style="margin-top:1em" id="empty-import-btn">⬆ Import leads</button></div>`;
       document.getElementById("empty-add-btn")?.addEventListener("click", () => openLeadForm());
+      document.getElementById("empty-import-btn")?.addEventListener("click", () => window.DDImport && window.DDImport.open());
       return;
     }
     el.innerHTML = list
       .map((lead) => {
         const pct = lead.completeness.percent;
+        const docs = lead.documents || {};
+        const docTotal = (docs.cdl || 0) + (docs.medical || 0) + (docs.other || 0);
+        const badges = [
+          lead.cdl || docs.cdl ? `<span class="doc-badge ${docs.cdl ? "ok" : ""}" title="${docs.cdl ? "CDL photo on file" : "No CDL photo yet"}">CDL${lead.cdl ? ": " + escapeHtml(lead.cdl) : ""}${docs.cdl ? " 📷" : ""}</span>` : "",
+          lead.medical_card || docs.medical ? `<span class="doc-badge ${docs.medical ? "ok" : ""}" title="${docs.medical ? "Medical card photo on file" : "No medical card photo yet"}">Med${lead.medical_card ? ": " + escapeHtml(lead.medical_card) : ""}${docs.medical ? " 📷" : ""}</span>` : "",
+        ].join("");
         return `
         <div class="panel lead-card" data-id="${lead.id}">
           <div class="lead-card-top">
             <div>
               <div class="lead-name">${escapeHtml(lead.name)}</div>
-              <div class="lead-meta">${[lead.company, lead.phone, lead.email].filter(Boolean).map(escapeHtml).join(" · ")}</div>
+              <div class="lead-meta">${[lead.phone, lead.email, lead.state, lead.company].filter(Boolean).map(escapeHtml).join(" · ")}</div>
+              ${badges ? `<div class="doc-badges">${badges}</div>` : ""}
               ${lead.next_follow_up_at ? `<div class="lead-meta">Follow up: ${fmtDate(lead.next_follow_up_at)}</div>` : ""}
             </div>
             <span class="status-pill status-${lead.status}">${fmtStatus(lead.status)}</span>
@@ -185,6 +196,7 @@
             ${lead.phone ? `<a class="btn btn-ghost btn-sm" href="tel:${escapeHtml(lead.phone)}">📞 Call</a>` : ""}
             ${lead.phone ? `<button class="btn btn-ghost btn-sm" data-action="text" data-id="${lead.id}">💬 Text</button>` : ""}
             <button class="btn btn-ghost btn-sm" data-action="log-call" data-id="${lead.id}">📝 Log call</button>
+            <button class="btn btn-ghost btn-sm" data-action="docs" data-id="${lead.id}">📎 CDL / Med photos${docTotal ? ` (${docTotal})` : ""}</button>
             <button class="btn btn-ghost btn-sm" data-action="edit" data-id="${lead.id}">Edit</button>
             <button class="btn btn-ghost btn-sm" data-action="delete" data-id="${lead.id}">Delete</button>
           </div>
@@ -208,6 +220,7 @@
     }
     if (action === "log-call") openCallLogForm(lead);
     if (action === "text") openTextComposer(lead);
+    if (action === "docs" && window.DDDocs) window.DDDocs.open(lead);
   });
 
   function customFieldInputs(values) {
@@ -241,6 +254,9 @@
         <div class="field"><label>Name *</label><input name="name" required value="${escapeHtml(lead?.name)}" /></div>
         <div class="field"><label>Phone</label><input name="phone" value="${escapeHtml(lead?.phone)}" /></div>
         <div class="field"><label>Email</label><input name="email" type="email" value="${escapeHtml(lead?.email)}" /></div>
+        <div class="field"><label>State</label><input name="state" maxlength="40" placeholder="TX" value="${escapeHtml(lead?.state)}" /></div>
+        <div class="field"><label>CDL</label><input name="cdl" placeholder="Class A, 3 yrs, Hazmat" value="${escapeHtml(lead?.cdl)}" /></div>
+        <div class="field"><label>Medical card</label><input name="medical_card" placeholder="Valid until 05/2027" value="${escapeHtml(lead?.medical_card)}" /></div>
         <div class="field"><label>Company</label><input name="company" value="${escapeHtml(lead?.company)}" /></div>
         <div class="field"><label>Status</label>
           <select name="status">
@@ -254,10 +270,12 @@
         <div style="display:flex; gap:0.5em; margin-top:1em;">
           <button type="submit" class="btn btn-primary">${isEdit ? "Save" : "Add lead"}</button>
           <button type="button" class="btn btn-ghost" id="cancel-btn">Cancel</button>
+          ${isEdit ? `<button type="button" class="btn btn-ghost" id="lead-docs-btn">📎 CDL / Med photos</button>` : ""}
         </div>
       </form>
     `);
     document.getElementById("cancel-btn").addEventListener("click", closeModal);
+    document.getElementById("lead-docs-btn")?.addEventListener("click", () => window.DDDocs && window.DDDocs.open(lead));
     onSubmit(document.getElementById("lead-form"), async (e) => {
       const form = new FormData(e.target);
       const customData = {};
@@ -270,6 +288,9 @@
         phone: form.get("phone"),
         email: form.get("email"),
         company: form.get("company"),
+        state: form.get("state"),
+        cdl: form.get("cdl"),
+        medical_card: form.get("medical_card"),
         status: form.get("status"),
         source: form.get("source"),
         notes: form.get("notes"),
@@ -317,7 +338,7 @@
 
   function fillTemplate(body, lead) {
     const customData = JSON.parse(lead.custom_data || "{}");
-    const values = { ...customData, name: lead.name, company: lead.company, phone: lead.phone, email: lead.email, status: fmtStatus(lead.status) };
+    const values = { ...customData, name: lead.name, company: lead.company, phone: lead.phone, email: lead.email, state: lead.state, cdl: lead.cdl, status: fmtStatus(lead.status) };
     return body.replace(/\{(\w+)\}/g, (match, key) => values[key] ?? match);
   }
 
@@ -564,6 +585,7 @@
   // ---------- Toolbar + tabs ----------
 
   document.getElementById("add-lead-btn").addEventListener("click", () => openLeadForm());
+  document.getElementById("import-leads-btn").addEventListener("click", () => window.DDImport && window.DDImport.open());
   document.getElementById("search-input").addEventListener("input", (e) => {
     state.filters.q = e.target.value;
     renderLeads();
@@ -602,6 +624,9 @@
     await fetch("/api/auth/sign-out", { method: "POST" });
     window.location.href = "/login.html";
   });
+
+  // Shared helpers for import.js and documents.js.
+  window.DD = { state, api, apiGet, apiPost, apiDelete, escapeHtml, openModal, closeModal, reloadLeads, onClick };
 
   loadAll().catch((err) => {
     console.error(err);

@@ -24,6 +24,9 @@ export interface Lead {
   phone: string | null;
   email: string | null;
   company: string | null;
+  state: string | null;
+  cdl: string | null;
+  medical_card: string | null;
   status: LeadStatus;
   source: string | null;
   notes: string | null;
@@ -81,4 +84,24 @@ export interface CallLog {
   outcome: string | null;
   note: string | null;
   created_at: string;
+}
+
+export type DocumentKind = "cdl" | "medical" | "other";
+
+export const DOCUMENT_KINDS: DocumentKind[] = ["cdl", "medical", "other"];
+
+/** Metadata only — the base64 `data` column is fetched separately. */
+export interface LeadDocumentMeta {
+  id: string;
+  user_id: string;
+  lead_id: string;
+  kind: DocumentKind;
+  file_name: string | null;
+  mime_type: string;
+  size: number;
+  created_at: string;
+}
+
+export interface LeadDocument extends LeadDocumentMeta {
+  data: string;
 }

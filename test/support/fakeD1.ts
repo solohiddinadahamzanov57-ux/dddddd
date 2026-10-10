@@ -23,6 +23,11 @@ export function createFakeD1(): D1Database {
   }
 
   const fake = {
+    async batch(statements: Array<{ run: () => Promise<unknown> }>) {
+      const results = [];
+      for (const stmt of statements) results.push(await stmt.run());
+      return results;
+    },
     prepare(sql: string) {
       const stmt = sqlite.prepare(sql);
       let boundArgs: unknown[] = [];

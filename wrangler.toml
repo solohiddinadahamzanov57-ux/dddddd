@@ -10,6 +10,14 @@ not_found_handling = "404-page"
 html_handling = "none"
 run_worker_first = ["/", "/api/*", "/dashboard", "/dashboard/*"]
 
+# Workers AI — reads photos, PDFs and Word docs for the lead importer.
+# Uses the free daily allowance; no paid plan needed.
+[ai]
+binding = "AI"
+
+[observability]
+enabled = true
+
 [[d1_databases]]
 binding = "DB"
 database_name = "driver_desk_db"

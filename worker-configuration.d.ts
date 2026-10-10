@@ -4,7 +4,8 @@
 interface __BaseEnv_Env {
 	DB: D1Database;
 	ASSETS: Fetcher;
-	APP_URL: "http://localhost:8787";
+	AI: Ai;
+	APP_URL: "https://dddddd.muslimsolokhiddin.workers.dev";
 	BETTER_AUTH_SECRET: "dev-only-placeholder-change-me";
 	GOOGLE_CLIENT_ID: "";
 	GOOGLE_CLIENT_SECRET: "";
