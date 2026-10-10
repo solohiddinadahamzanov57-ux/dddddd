@@ -43,7 +43,7 @@
 
       <section id="tab-leads">
         <div class="toolbar">
-          <input type="search" id="search-input" placeholder="Search name, phone, email, company…" />
+          <input type="search" id="search-input" placeholder="Search name, phone, email, state…" />
           <select id="status-filter">
             <option value="">All statuses</option>
             <option value="new">New</option>
@@ -55,6 +55,7 @@
             <option value="lost">Lost</option>
           </select>
           <button class="chip" id="due-today-chip">Due today</button>
+          <button class="btn btn-accent" id="import-leads-btn">⬆ Import leads</button>
           <button class="btn btn-primary" id="add-lead-btn">+ Add lead</button>
         </div>
         <div id="leads-list"></div>
@@ -86,5 +87,7 @@
   <div id="modal-root"></div>
 
   <script src="/js/dashboard.js"></script>
+  <script src="/js/import.js"></script>
+  <script src="/js/documents.js"></script>
 </body>
 </html>
