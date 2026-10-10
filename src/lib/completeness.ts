@@ -1,6 +1,6 @@
 import type { CustomField, Lead } from "./types";
 
-const CORE_FIELDS: Array<keyof Lead> = ["phone", "email", "company"];
+const CORE_FIELDS: Array<keyof Lead> = ["phone", "email", "state"];
 
 export interface CompletenessResult {
   filled: number;
