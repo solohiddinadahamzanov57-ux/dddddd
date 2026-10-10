@@ -93,4 +93,42 @@ describe("scopedDb user isolation", () => {
     expect(await dbE.messageTemplates.list()).toHaveLength(1);
     expect(await dbE.callLogs.listForLead(leadE.id)).toHaveLength(1);
   });
+
+  it("isolates imported leads and CDL / medical documents", async () => {
+    await makeUser("user-g", "g@example.com");
+    await makeUser("user-h", "h@example.com");
+
+    const dbG = scopedDb(db, "user-g");
+    const dbH = scopedDb(db, "user-h");
+
+    const imported = await dbG.leads.createMany([
+      { name: "Imported One", phone: "(555) 000-0001", state: "TX", cdl: "Class A" },
+      { name: "Imported Two", email: "two@gmail.com", medical_card: "exp 2027" },
+    ]);
+    expect(imported).toHaveLength(2);
+    expect(await dbG.leads.list()).toHaveLength(2);
+    expect(await dbH.leads.list()).toEqual([]);
+    expect((await dbG.leads.get(imported[0].id))?.state).toBe("TX");
+
+    const doc = await dbG.documents.create({
+      lead_id: imported[0].id,
+      kind: "cdl",
+      mime_type: "image/jpeg",
+      size: 3,
+      data: "AAAA",
+    });
+    expect(doc).not.toBeNull();
+
+    // H can't attach to G's lead, list it, read it, or delete it.
+    expect(
+      await dbH.documents.create({ lead_id: imported[0].id, kind: "cdl", mime_type: "image/jpeg", size: 3, data: "AAAA" }),
+    ).toBeNull();
+    expect(await dbH.documents.listForLead(imported[0].id)).toEqual([]);
+    expect(await dbH.documents.listAllMeta()).toEqual([]);
+    expect(await dbH.documents.get(imported[0].id, doc!.id)).toBeNull();
+    expect(await dbH.documents.remove(imported[0].id, doc!.id)).toBe(false);
+
+    expect(await dbG.documents.listAllMeta()).toHaveLength(1);
+    expect((await dbG.documents.get(imported[0].id, doc!.id))?.data).toBe("AAAA");
+  });
 });
