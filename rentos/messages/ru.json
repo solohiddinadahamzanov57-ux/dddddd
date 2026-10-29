@@ -1,0 +1,35 @@
+{
+  "common": {
+    "appName": "RentOS",
+    "loading": "Загрузка…",
+    "save": "Сохранить",
+    "cancel": "Отмена"
+  },
+  "auth": {
+    "signUpTitle": "Создать аккаунт",
+    "signInTitle": "Вход",
+    "email": "Электронная почта",
+    "password": "Пароль",
+    "signUpSubmit": "Создать аккаунт",
+    "signInSubmit": "Войти",
+    "signInPrompt": "Уже есть аккаунт?",
+    "signInLink": "Войти",
+    "signUpPrompt": "Нет аккаунта?",
+    "signUpLink": "Создать",
+    "signOut": "Выйти"
+  },
+  "onboarding": {
+    "title": "Настройте компанию",
+    "subtitle": "Это займёт минуту. Все можно изменить позже.",
+    "companyName": "Название компании",
+    "companyNamePlaceholder": "например, Harbor City Rentals",
+    "currency": "Валюта",
+    "timezone": "Часовой пояс",
+    "submit": "Создать компанию"
+  },
+  "errors": {
+    "generic": "Что-то пошло не так. Попробуйте снова.",
+    "invalidCredentials": "Эта почта или пароль не подходят ни одному аккаунту.",
+    "companyNameRequired": "Введите название компании."
+  }
+}

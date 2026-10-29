@@ -1,0 +1,35 @@
+{
+  "common": {
+    "appName": "RentOS",
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "auth": {
+    "signUpTitle": "Create your account",
+    "signInTitle": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "signUpSubmit": "Create account",
+    "signInSubmit": "Sign in",
+    "signInPrompt": "Already have an account?",
+    "signInLink": "Sign in",
+    "signUpPrompt": "Don't have an account?",
+    "signUpLink": "Create one",
+    "signOut": "Sign out"
+  },
+  "onboarding": {
+    "title": "Set up your company",
+    "subtitle": "This takes a minute. You can change everything later.",
+    "companyName": "Company name",
+    "companyNamePlaceholder": "e.g. Harbor City Rentals",
+    "currency": "Currency",
+    "timezone": "Time zone",
+    "submit": "Create company"
+  },
+  "errors": {
+    "generic": "Something went wrong. Try again.",
+    "invalidCredentials": "That email or password doesn't match an account.",
+    "companyNameRequired": "Enter a company name."
+  }
+}
