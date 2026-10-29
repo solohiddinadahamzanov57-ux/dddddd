@@ -23,7 +23,7 @@ export async function signUp(
   const { data, error } = await supabase.auth.signUp(parsed.data);
 
   if (error) {
-    return { error: error.message };
+    return { error: "errors.generic" };
   }
 
   // Email confirmation is on by default for a new Supabase project -- no

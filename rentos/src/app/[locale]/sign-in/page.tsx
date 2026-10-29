@@ -12,6 +12,7 @@ import { signIn, type SignInState } from "./actions";
 
 export default function SignInPage() {
   const t = useTranslations("auth");
+  const tErrors = useTranslations();
   const { locale } = useParams<{ locale: string }>();
   const [state, action, pending] = useActionState<SignInState, FormData>(
     (prevState, formData) => signIn(locale, prevState, formData),
@@ -23,7 +24,7 @@ export default function SignInPage() {
       <form action={action} className="flex flex-col gap-4">
         <Field label={t("email")} name="email" type="email" />
         <Field label={t("password")} name="password" type="password" />
-        <FormError message={state.error} />
+        <FormError message={state.error ? tErrors(state.error) : undefined} />
         <SubmitButton>{pending ? "…" : t("signInSubmit")}</SubmitButton>
       </form>
       <p className="mt-4 text-sm text-[var(--color-text-muted)]">

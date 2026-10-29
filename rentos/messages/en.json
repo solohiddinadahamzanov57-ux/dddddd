@@ -16,7 +16,8 @@
     "signInLink": "Sign in",
     "signUpPrompt": "Don't have an account?",
     "signUpLink": "Create one",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "confirmEmailMessage": "Check your email to confirm your account, then"
   },
   "onboarding": {
     "title": "Set up your company",
@@ -30,6 +31,94 @@
   "errors": {
     "generic": "Something went wrong. Try again.",
     "invalidCredentials": "That email or password doesn't match an account.",
-    "companyNameRequired": "Enter a company name."
+    "companyNameRequired": "Enter a company name.",
+    "vehicleHasHistory": "This vehicle has reservations or rentals on record and can't be deleted."
+  },
+  "fleet": {
+    "title": "Fleet",
+    "searchPlaceholder": "Plate, barcode, or model",
+    "allStatuses": "All statuses",
+    "allTypes": "All types",
+    "allFuelTypes": "All fuel types",
+    "scan": "Scan",
+    "addVehicle": "Add vehicle",
+    "empty": "No vehicles match these filters yet.",
+    "stall": "stall",
+    "status": {
+      "available": "Available",
+      "rented": "Rented",
+      "service": "In service"
+    },
+    "vehicleType": {
+      "car": "Car",
+      "truck": "Truck",
+      "suv": "SUV",
+      "van": "Van",
+      "motorcycle": "Motorcycle"
+    },
+    "subtype": {
+      "sedan": "Sedan",
+      "hatchback": "Hatchback",
+      "coupe": "Coupe",
+      "pickup": "Pickup",
+      "box_truck": "Box truck",
+      "compact": "Compact",
+      "full_size": "Full-size",
+      "passenger": "Passenger",
+      "cargo": "Cargo",
+      "standard": "Standard",
+      "touring": "Touring"
+    },
+    "fuel": {
+      "gasoline": "Gasoline",
+      "diesel": "Diesel",
+      "electric": "Electric",
+      "hybrid": "Hybrid",
+      "other": "Other"
+    },
+    "fuelLabel": "fuel",
+    "chargeLabel": "charge",
+    "levelSource": {
+      "manual": "Manual",
+      "photo": "Photo",
+      "obd": "OBD",
+      "api": "API"
+    },
+    "form": {
+      "model": "Model",
+      "type": "Type",
+      "subtype": "Subtype",
+      "licensePlate": "License plate",
+      "color": "Color",
+      "parkingStall": "Parking stall",
+      "odometer": "Odometer",
+      "fuelType": "Fuel type",
+      "level": "Level %",
+      "levelSource": "Level source"
+    },
+    "changeStatus": "Change status",
+    "statusNote": "Note (optional)",
+    "update": "Update",
+    "editDetails": "Edit details",
+    "saveChanges": "Save changes",
+    "vehicleLog": "Vehicle log",
+    "noLogEntries": "No events logged yet.",
+    "deleteVehicle": "Delete vehicle",
+    "deleteConfirm": "Delete this vehicle? This can't be undone.",
+    "scanTitle": "Scan a vehicle",
+    "scanPrompt": "Point the camera at a vehicle's barcode.",
+    "scanLookingUp": "Looking up vehicle…",
+    "scanNotFound": "No vehicle in your fleet has that barcode.",
+    "scanAgain": "Scan again",
+    "cameraUnavailable": "Camera unavailable: {message}",
+    "cameraGenericError": "Could not access the camera.",
+    "logEvent": {
+      "status_change": "Status changed",
+      "inspection": "Inspection",
+      "service": "Service",
+      "note": "Note",
+      "pickup": "Picked up",
+      "return": "Returned"
+    }
   }
 }

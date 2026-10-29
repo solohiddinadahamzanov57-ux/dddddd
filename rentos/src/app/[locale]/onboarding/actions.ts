@@ -36,8 +36,8 @@ export async function createCompany(
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: "errors.generic" };
   }
 
-  return redirect({ href: "/dashboard", locale });
+  return redirect({ href: "/fleet", locale });
 }

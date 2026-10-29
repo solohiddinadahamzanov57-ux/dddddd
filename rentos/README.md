@@ -8,16 +8,18 @@ plan, and `docs/DECISIONS.md` for why things are built the way they are.
 > unrelated product (Driver Desk, at the repo root). They're independent;
 > nothing here touches it and nothing there touches this.
 
-**Status: Phase 0 (foundation) complete.** Sign up, create a company, and
-company data is isolated by Postgres Row Level Security -- proven by a test
-that runs the real migrations against a throwaway database (see
-`test/rls/`).
+**Status: Phases 0-1 complete.** Sign up, create a company (isolated by
+Postgres Row Level Security -- proven by a test that runs the real
+migrations against a throwaway database, see `test/rls/`), and manage a
+fleet: add/edit/delete vehicles, scan a barcode with the camera to find one,
+change status (auto-logged), and see each vehicle as a 3D card with its
+status, fuel/charge level, plate, and mileage.
 
 ## Stack
 
 Next.js (App Router, TypeScript strict, Tailwind) + Supabase (Postgres,
-Auth, RLS) + `next-intl` (English/Russian) + Vitest + Playwright. Stripe and
-the 3D vehicle cards (`<model-viewer>`) arrive in later phases.
+Auth, RLS) + `<model-viewer>` for the 3D vehicle cards + `next-intl`
+(English/Russian) + Vitest + Playwright. Stripe arrives in a later phase.
 
 ## Setup
 

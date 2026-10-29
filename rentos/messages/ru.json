@@ -16,7 +16,8 @@
     "signInLink": "Войти",
     "signUpPrompt": "Нет аккаунта?",
     "signUpLink": "Создать",
-    "signOut": "Выйти"
+    "signOut": "Выйти",
+    "confirmEmailMessage": "Подтвердите аккаунт по ссылке из письма, затем"
   },
   "onboarding": {
     "title": "Настройте компанию",
@@ -30,6 +31,94 @@
   "errors": {
     "generic": "Что-то пошло не так. Попробуйте снова.",
     "invalidCredentials": "Эта почта или пароль не подходят ни одному аккаунту.",
-    "companyNameRequired": "Введите название компании."
+    "companyNameRequired": "Введите название компании.",
+    "vehicleHasHistory": "У этого автомобиля есть бронирования или аренды — удалить нельзя."
+  },
+  "fleet": {
+    "title": "Автопарк",
+    "searchPlaceholder": "Номер, штрихкод или модель",
+    "allStatuses": "Все статусы",
+    "allTypes": "Все типы",
+    "allFuelTypes": "Все виды топлива",
+    "scan": "Сканировать",
+    "addVehicle": "Добавить автомобиль",
+    "empty": "Под эти фильтры ничего не подходит.",
+    "stall": "место",
+    "status": {
+      "available": "Свободен",
+      "rented": "В аренде",
+      "service": "На обслуживании"
+    },
+    "vehicleType": {
+      "car": "Легковой",
+      "truck": "Грузовик",
+      "suv": "Внедорожник",
+      "van": "Фургон",
+      "motorcycle": "Мотоцикл"
+    },
+    "subtype": {
+      "sedan": "Седан",
+      "hatchback": "Хэтчбек",
+      "coupe": "Купе",
+      "pickup": "Пикап",
+      "box_truck": "Грузовой фургон",
+      "compact": "Компактный",
+      "full_size": "Полноразмерный",
+      "passenger": "Пассажирский",
+      "cargo": "Грузовой",
+      "standard": "Стандартный",
+      "touring": "Туристический"
+    },
+    "fuel": {
+      "gasoline": "Бензин",
+      "diesel": "Дизель",
+      "electric": "Электро",
+      "hybrid": "Гибрид",
+      "other": "Другое"
+    },
+    "fuelLabel": "топливо",
+    "chargeLabel": "заряд",
+    "levelSource": {
+      "manual": "Вручную",
+      "photo": "Фото",
+      "obd": "OBD",
+      "api": "API"
+    },
+    "form": {
+      "model": "Модель",
+      "type": "Тип",
+      "subtype": "Подтип",
+      "licensePlate": "Гос. номер",
+      "color": "Цвет",
+      "parkingStall": "Место на стоянке",
+      "odometer": "Пробег",
+      "fuelType": "Вид топлива",
+      "level": "Уровень %",
+      "levelSource": "Источник данных"
+    },
+    "changeStatus": "Изменить статус",
+    "statusNote": "Комментарий (необязательно)",
+    "update": "Обновить",
+    "editDetails": "Редактировать данные",
+    "saveChanges": "Сохранить изменения",
+    "vehicleLog": "История автомобиля",
+    "noLogEntries": "Событий пока нет.",
+    "deleteVehicle": "Удалить автомобиль",
+    "deleteConfirm": "Удалить этот автомобиль? Это необратимо.",
+    "scanTitle": "Сканировать автомобиль",
+    "scanPrompt": "Наведите камеру на штрихкод автомобиля.",
+    "scanLookingUp": "Поиск автомобиля…",
+    "scanNotFound": "В вашем автопарке нет автомобиля с этим штрихкодом.",
+    "scanAgain": "Сканировать снова",
+    "cameraUnavailable": "Камера недоступна: {message}",
+    "cameraGenericError": "Не удалось получить доступ к камере.",
+    "logEvent": {
+      "status_change": "Статус изменён",
+      "inspection": "Осмотр",
+      "service": "Обслуживание",
+      "note": "Комментарий",
+      "pickup": "Выдан",
+      "return": "Возвращён"
+    }
   }
 }

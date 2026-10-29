@@ -3,6 +3,87 @@
 Durable choices made along the way, and why, so later phases don't
 re-litigate them. Newest first.
 
+## Phase 1
+
+- **Placeholder 3D models, generated not downloaded.** `public/models/*.glb`
+  are simple boxes/cylinders built programmatically by
+  `scripts/generate-placeholder-models.mjs` via `@gltf-transform/core` --
+  not sourced from anywhere, so there's no licensing question. Each has a
+  material literally named `body` so `VehicleCard3D` can recolor it per
+  vehicle at runtime via `<model-viewer>`'s material API. See `LICENSES.md`
+  for how to swap in real models later.
+
+- **Vehicle color is free text, recolored via a name->hex lookup.**
+  `vehicles.color` stores what staff actually type ("Silver", "Blue"), not a
+  hex code. `src/lib/vehicles/color.ts` maps common names to hex for the 3D
+  card and falls back to a neutral gray for anything it doesn't recognize,
+  rather than guessing or erroring.
+
+- **`@supabase/ssr`'s `createServerClient<Database>()` doesn't infer
+  `Database["public"]["Functions"]` correctly in 0.6.1** -- discovered
+  while wiring `supabase.rpc("create_company", ...)`: the call type-checked
+  the RPC args against `undefined` instead of the real `Args` type, even
+  though the same `Database` type worked fine through plain `createClient`
+  from `@supabase/supabase-js`. Pinned to `^0.12.7`, confirmed with a
+  throwaway isolated repro before touching the real code. (Recorded here
+  too, not just in the Phase 0 section, since it's the kind of thing that
+  looks like "my code is wrong" and costs real time to re-diagnose if it
+  resurfaces after a dependency bump.)
+
+- **Vehicle log entries for status changes are written by a DB trigger, not
+  application code.** `log_vehicle_status_change()` (migration
+  `20260102000000_vehicle_log_trigger.sql`) fires `AFTER UPDATE` on
+  `vehicles` whenever `status` actually changes, resolves the caller's own
+  `accounts.id` as the actor, and inserts the log row itself. The
+  alternative -- remembering to insert a log row in every code path that
+  can change status -- reliably rots as more of those paths get added
+  (Phase 2's checkout/return flows, for one). Manual notes (via
+  `changeVehicleStatus`'s optional note field) are still inserted from
+  application code since there's no DB-level event to hang them off of.
+
+- **Barcodes are generated client-side (random 6-char code, retried on
+  collision) rather than via a DB sequence or function.** Matches the
+  pattern already used for company slugs in Phase 0. Ambiguous characters
+  (0/O, 1/I/L) are excluded since these get read and typed by hand.
+
+- **Barcode scanning uses `@zxing/browser`, not the native `BarcodeDetector`
+  API.** `BarcodeDetector` isn't supported in Safari or Firefox yet; a
+  camera-decoding library works everywhere `getUserMedia` does.
+
+- **`src/lib/vehicles/types.ts` (the type->subtype mapping) is a
+  hand-maintained mirror of the DB's `vehicles_subtype_matches_type` CHECK
+  constraint, not generated from it.** `test/rls/vehicle-subtypes.test.ts`
+  is what actually keeps them honest -- it inserts every (type, subtype)
+  pair the TS module calls valid against real Postgres and asserts a
+  couple of invalid ones are rejected, so drift between the two fails CI
+  instead of shipping silently.
+
+- **All server-action error returns are i18n keys, never raw Postgres/Auth
+  error text.** Every action returns strings like `"errors.generic"`,
+  translated with `useTranslations()` (no namespace -- the key already
+  carries the full dotted path) at the point of display. This was a
+  Phase 0 gap (`FormError message={state.error}` was rendering raw English
+  provider text untranslated) fixed while touching this pattern for the
+  fleet actions. Raw errors are still `console.error`'d server-side for
+  debugging; the client only ever sees a translated, generic message --
+  consistent with not leaking internal error detail to the UI.
+
+- **`(app)` route group added for every signed-in page.**
+  `src/app/[locale]/(app)/layout.tsx` does the "signed in? has a company?"
+  check and renders the shared header once, instead of every page
+  (`/fleet`, `/fleet/new`, `/fleet/[vehicleId]`, `/fleet/scan`,
+  `/dashboard`) repeating it. `/dashboard` is now just a redirect to
+  `/fleet` -- kept as a route so the Phase 0 sign-in flow's target URL
+  doesn't need to change, but `/fleet` is the real operator home from here
+  on.
+
+- **Vehicle CRUD and status changes are open to any staff role** (owner,
+  receptionist, worker) via the existing `is_staff_in_company` RLS check,
+  not narrowed to receptionist-only as the domain brief's permission list
+  implies. Fine-grained per-action role checks are a cheap addition once
+  there's a real invite/role-management flow (Phase 2/3) to assign roles
+  through in the first place; not worth building ahead of that.
+
 ## Phase 0
 
 - **Repo layout.** This GitHub repo already contained an unrelated,

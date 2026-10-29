@@ -22,9 +22,9 @@ export async function signIn(
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) {
-    return { error: error.message };
+    return { error: "errors.invalidCredentials" };
   }
 
   const { data: accounts } = await supabase.from("accounts").select("id").limit(1);
-  return redirect({ href: accounts && accounts.length > 0 ? "/dashboard" : "/onboarding", locale });
+  return redirect({ href: accounts && accounts.length > 0 ? "/fleet" : "/onboarding", locale });
 }

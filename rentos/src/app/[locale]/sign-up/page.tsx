@@ -12,6 +12,7 @@ import { signUp, type SignUpState } from "./actions";
 
 export default function SignUpPage() {
   const t = useTranslations("auth");
+  const tErrors = useTranslations();
   const { locale } = useParams<{ locale: string }>();
   const [state, action, pending] = useActionState<SignUpState, FormData>(
     (prevState, formData) => signUp(locale, prevState, formData),
@@ -22,7 +23,7 @@ export default function SignUpPage() {
     return (
       <AuthCard title={t("signUpTitle")}>
         <p className="text-sm text-[var(--color-text)]">
-          Check your email to confirm your account, then{" "}
+          {t("confirmEmailMessage")}{" "}
           <Link href="/sign-in" className="text-[var(--color-accent)] underline">
             {t("signInLink").toLowerCase()}
           </Link>
@@ -37,7 +38,7 @@ export default function SignUpPage() {
       <form action={action} className="flex flex-col gap-4">
         <Field label={t("email")} name="email" type="email" />
         <Field label={t("password")} name="password" type="password" />
-        <FormError message={state.error} />
+        <FormError message={state.error ? tErrors(state.error) : undefined} />
         <SubmitButton>{pending ? "…" : t("signUpSubmit")}</SubmitButton>
       </form>
       <p className="mt-4 text-sm text-[var(--color-text-muted)]">

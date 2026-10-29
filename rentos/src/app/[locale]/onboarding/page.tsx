@@ -13,6 +13,7 @@ const CURRENCIES = ["USD", "EUR", "GBP", "RUB", "AED", "KZT"];
 
 export default function OnboardingPage() {
   const t = useTranslations("onboarding");
+  const tErrors = useTranslations();
   const { locale } = useParams<{ locale: string }>();
   const [state, action, pending] = useActionState<CreateCompanyState, FormData>(
     (prevState, formData) => createCompany(locale, prevState, formData),
@@ -38,7 +39,7 @@ export default function OnboardingPage() {
           </select>
         </label>
         <Field label={t("timezone")} name="timezone" defaultValue="UTC" />
-        <FormError message={state.error} />
+        <FormError message={state.error ? tErrors(state.error) : undefined} />
         <SubmitButton>{pending ? "…" : t("submit")}</SubmitButton>
       </form>
     </AuthCard>
