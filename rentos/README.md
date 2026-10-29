@@ -8,12 +8,17 @@ plan, and `docs/DECISIONS.md` for why things are built the way they are.
 > unrelated product (Driver Desk, at the repo root). They're independent;
 > nothing here touches it and nothing there touches this.
 
-**Status: Phases 0-1 complete.** Sign up, create a company (isolated by
+**Status: Phases 0-2 complete.** Sign up, create a company (isolated by
 Postgres Row Level Security -- proven by a test that runs the real
-migrations against a throwaway database, see `test/rls/`), and manage a
-fleet: add/edit/delete vehicles, scan a barcode with the camera to find one,
-change status (auto-logged), and see each vehicle as a 3D card with its
-status, fuel/charge level, plate, and mileage.
+migrations against a throwaway database, see `test/rls/`), manage a fleet
+(add/edit/delete vehicles, scan a barcode with the camera to find one,
+change status (auto-logged), 3D vehicle cards), and run rentals end to end:
+set tariffs, check a vehicle out to a customer, watch a live timer and
+running total, return it and get a final charge computed server-side
+(hourly/daily/weekly tiering, grace period, late fees -- all unit tested,
+including across DST transitions), log expenses, and see revenue/profit per
+vehicle and per period. A GiST exclusion constraint stops two reservations
+from ever double-booking the same vehicle.
 
 ## Stack
 

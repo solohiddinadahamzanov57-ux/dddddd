@@ -362,6 +362,7 @@ export type Database = {
           created_at: string;
           currency: string;
           ended_at: string | null;
+          expected_return_at: string | null;
           extras_minor: number;
           id: string;
           late_fee_minor: number;
@@ -384,6 +385,7 @@ export type Database = {
           created_at?: string;
           currency: string;
           ended_at?: string | null;
+          expected_return_at?: string | null;
           extras_minor?: number;
           id?: string;
           late_fee_minor?: number;
@@ -405,6 +407,7 @@ export type Database = {
           created_at?: string;
           currency?: string;
           ended_at?: string | null;
+          expected_return_at?: string | null;
           extras_minor?: number;
           id?: string;
           late_fee_minor?: number;
@@ -458,6 +461,7 @@ export type Database = {
           created_at: string;
           created_by_account_id: string | null;
           currency: string;
+          during: unknown;
           end_at: string;
           id: string;
           location_id: string | null;
@@ -477,6 +481,7 @@ export type Database = {
           created_at?: string;
           created_by_account_id?: string | null;
           currency: string;
+          during?: never;
           end_at: string;
           id?: string;
           location_id?: string | null;
@@ -495,6 +500,7 @@ export type Database = {
           created_at?: string;
           created_by_account_id?: string | null;
           currency?: string;
+          during?: never;
           end_at?: string;
           id?: string;
           location_id?: string | null;
@@ -542,6 +548,60 @@ export type Database = {
             columns: ["vehicle_id"];
             isOneToOne: false;
             referencedRelation: "vehicles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      tariffs: {
+        Row: {
+          company_id: string;
+          created_at: string;
+          currency: string;
+          daily_rate_minor: number;
+          grace_period_minutes: number;
+          hourly_rate_minor: number;
+          id: string;
+          late_fee_per_hour_minor: number;
+          name: string;
+          updated_at: string;
+          vehicle_type: Database["public"]["Enums"]["vehicle_type"] | null;
+          weekly_rate_minor: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          company_id: string;
+          created_at?: string;
+          currency: string;
+          daily_rate_minor: number;
+          grace_period_minutes?: number;
+          hourly_rate_minor: number;
+          id?: string;
+          late_fee_per_hour_minor: number;
+          name?: string;
+          updated_at?: string;
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null;
+          weekly_rate_minor: number;
+        };
+        Update: {
+          company_id?: string;
+          created_at?: string;
+          currency?: string;
+          daily_rate_minor?: number;
+          grace_period_minutes?: number;
+          hourly_rate_minor?: number;
+          id?: string;
+          late_fee_per_hour_minor?: number;
+          name?: string;
+          updated_at?: string;
+          vehicle_type?: Database["public"]["Enums"]["vehicle_type"] | null;
+          weekly_rate_minor?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tariffs_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
             referencedColumns: ["id"];
           },
         ];
@@ -716,6 +776,18 @@ export type Database = {
       };
       is_staff_in_company: { Args: { target_company_id: string }; Returns: boolean };
       my_account_ids: { Args: Record<PropertyKey, never>; Returns: string[] };
+      vehicle_profit_report: {
+        Args: { p_company_id: string; p_from: string; p_to: string };
+        Returns: {
+          expenses_minor: number;
+          license_plate: string;
+          model: string;
+          profit_minor: number;
+          rental_count: number;
+          revenue_minor: number;
+          vehicle_id: string;
+        }[];
+      };
     };
     Enums: {
       account_role: "owner" | "receptionist" | "worker" | "member";

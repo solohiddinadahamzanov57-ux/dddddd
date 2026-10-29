@@ -3,6 +3,76 @@
 Durable choices made along the way, and why, so later phases don't
 re-litigate them. Newest first.
 
+## Phase 2
+
+- **Tariffs are one row per (company, vehicle type), with `vehicle_type IS
+NULL` as the company-wide default.** Added `tariffs` (migration
+  `20260103000000_tariffs.sql`) since Phase 0/1 only ever added the
+  `tariff_snapshot jsonb` columns to freeze a tariff into, never a place to
+  define one. A plain `unique(company_id, vehicle_type)` doesn't stop two
+  NULL-type rows (NULL <> NULL for uniqueness), so there's a separate
+  partial unique index for "at most one default per company." Picking the
+  effective tariff for a vehicle (per-type if set, else the default) is
+  done in app code (`pickEffectiveTariff`), not a DB function, since it's
+  a two-row lookup, not an aggregation.
+
+- **No single upsert target covers both the plain unique constraint and the
+  partial index**, so `saveTariff` (settings/actions.ts) is
+  update-then-insert-if-nothing-updated rather than one `.upsert()` call.
+
+- **Double-booking is prevented by a GiST exclusion constraint**
+  (`reservations_no_overlap`, migration `20260103000100_booking_calendar.sql`),
+  not application-level date-range validation. `btree_gist` is what lets a
+  GiST index also compare the plain `vehicle_id` uuid for equality
+  alongside the `tstzrange` overlap check. Proven against real Postgres in
+  `test/rls/booking-calendar.test.ts`: overlap rejected, back-to-back
+  bookings allowed, a cancelled reservation doesn't block the slot, a
+  different vehicle isn't affected.
+
+- **Fee calculation is a pure, dependency-free module**
+  (`src/lib/billing/fees.ts`) used identically by the server (the
+  authoritative charge at return) and the client (the live running-total
+  display) -- same inputs, same output, by construction, not by convention.
+  21 unit tests cover the hourly/daily/weekly tiering (including the "day
+  rate caps hourly billing" convention), grace periods, late fees, and --
+  explicitly, since CLAUDE.md calls this out -- that a rental spanning a
+  DST transition (both directions) still bills the same real elapsed time
+  as one that doesn't. All duration math is done on `Date`/epoch
+  milliseconds, never on calendar fields in a particular time zone.
+
+- **Walk-in customers get a real `auth.users` row, created server-side via
+  the service-role client**, not a separate "guest" concept. Every
+  `accounts` row still has to reference a real Supabase Auth user (that FK
+  was never going away), so `startRental`'s `resolveOrCreateMember` calls
+  `admin.auth.admin.createUser()` with `email_confirm: true` and a random
+  password, then inserts the `accounts` row through the same admin client
+  (accounts still has no client-facing INSERT policy -- see Phase 0). The
+  `company_id` on that insert is always the _calling staff member's own_,
+  looked up server-side, never taken from the form. This is also the
+  first real use of `src/lib/supabase/admin.ts`, built in Phase 0 but
+  unused until now.
+
+- **`vehicle_profit_report()` is a plain SQL function (not `SECURITY
+DEFINER`)**, unlike `create_company()` or the auth-helper functions.
+  It only aggregates `rentals`/`expenses` the caller could already see row
+  by row, so it runs with the caller's own privileges and RLS applies
+  inside it exactly as if the caller had queried those tables directly --
+  no elevated access needed, so none is granted. Proven in
+  `test/rls/vehicle-profit-report.test.ts`, including that rentals outside
+  the period or still `active` don't count as revenue, and that one
+  company can't see another's report.
+
+- **Server-action-level integration tests aren't part of the suite.**
+  Everything with real logic risk (RLS, triggers, exclusion constraints,
+  the aggregation function, the fee math) is tested where it actually
+  lives -- the DB layer and the pure `fees.ts` module. The server actions
+  themselves (`startRental`, `completeRental`, `saveTariff`, ...) are thin
+  glue over those tested pieces; testing them directly would mean mocking
+  Next.js's request-scoped cookie/auth context, which the test
+  infrastructure built so far (real Postgres, no Next.js runtime) doesn't
+  cover. Worth adding if a bug ever turns up in the glue itself rather
+  than the logic underneath it.
+
 ## Phase 1
 
 - **Placeholder 3D models, generated not downloaded.** `public/models/*.glb`

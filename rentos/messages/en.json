@@ -32,7 +32,18 @@
     "generic": "Something went wrong. Try again.",
     "invalidCredentials": "That email or password doesn't match an account.",
     "companyNameRequired": "Enter a company name.",
-    "vehicleHasHistory": "This vehicle has reservations or rentals on record and can't be deleted."
+    "vehicleHasHistory": "This vehicle has reservations or rentals on record and can't be deleted.",
+    "memberRequired": "Pick an existing customer or enter a name and email for a new one.",
+    "noTariff": "No tariff is set up for this vehicle type yet. Set one in Settings → Tariffs first.",
+    "vehicleNotAvailable": "This vehicle isn't available to check out right now.",
+    "rentalNotActive": "This rental has already been returned.",
+    "odometerTooLow": "The return odometer reading can't be less than the pickup reading."
+  },
+  "nav": {
+    "fleet": "Fleet",
+    "rentals": "Rentals",
+    "reports": "Reports",
+    "settings": "Tariffs"
   },
   "fleet": {
     "title": "Fleet",
@@ -119,6 +130,85 @@
       "note": "Note",
       "pickup": "Picked up",
       "return": "Returned"
+    },
+    "checkOut": "Check out",
+    "viewActiveRental": "View active rental",
+    "expenses": "Expenses",
+    "expenseCategory": "Category",
+    "expenseAmount": "Amount",
+    "expenseDate": "Date",
+    "expenseNotes": "Notes (optional)",
+    "addExpense": "Add expense",
+    "expenseCategoryLabel": {
+      "repair": "Repair",
+      "insurance": "Insurance",
+      "fuel": "Fuel",
+      "wash": "Wash",
+      "fine": "Fine"
     }
+  },
+  "rentals": {
+    "title": "Rentals",
+    "active": "Active",
+    "noActive": "No active rentals right now.",
+    "recent": "Recently completed",
+    "noRecent": "No completed rentals yet.",
+    "checkoutTitle": "Check out vehicle",
+    "customer": "Customer",
+    "existingCustomer": "Existing customer",
+    "newCustomer": "New customer",
+    "customerName": "Name",
+    "customerEmail": "Email",
+    "customerPhone": "Phone (optional)",
+    "expectedReturn": "Expected return (optional)",
+    "extras": "Extras",
+    "extraType": {
+      "equipment": "Equipment",
+      "service": "Service",
+      "insurance": "Insurance",
+      "additional_driver": "Additional driver"
+    },
+    "extraLabelPlaceholder": "e.g. Child seat",
+    "addExtra": "Add",
+    "remove": "Remove",
+    "startRental": "Start rental",
+    "rentalFor": "Rental for",
+    "startedAt": "Started",
+    "estimatedSoFar": "Estimated so far",
+    "includesLateFee": "includes late fee",
+    "returnVehicle": "Return vehicle",
+    "odometerEnd": "Odometer at return",
+    "finalCharge": "Final charge",
+    "subtotal": "Subtotal",
+    "lateFee": "Late fee",
+    "tax": "Tax",
+    "total": "Total",
+    "returnedAt": "Returned"
+  },
+  "tariffs": {
+    "title": "Tariffs",
+    "subtitle": "What you charge by default, and per vehicle type if it should differ.",
+    "defaultTariff": "Default tariff",
+    "perTypeTariffs": "Per-type tariffs",
+    "addPerTypeTariff": "Add a per-type tariff",
+    "vehicleType": "Vehicle type",
+    "allTypesDefault": "All types (default)",
+    "currency": "Currency",
+    "gracePeriodMinutes": "Grace period (minutes)",
+    "hourlyRate": "Hourly rate",
+    "dailyRate": "Daily rate",
+    "weeklyRate": "Weekly rate",
+    "lateFeePerHour": "Late fee per hour",
+    "save": "Save"
+  },
+  "reports": {
+    "title": "Reports",
+    "apply": "Apply",
+    "revenue": "Revenue",
+    "expenses": "Expenses",
+    "profit": "Profit",
+    "vehicle": "Vehicle",
+    "rentals": "Rentals",
+    "empty": "No fleet activity in this period yet."
   }
 }

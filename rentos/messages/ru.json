@@ -32,7 +32,18 @@
     "generic": "Что-то пошло не так. Попробуйте снова.",
     "invalidCredentials": "Эта почта или пароль не подходят ни одному аккаунту.",
     "companyNameRequired": "Введите название компании.",
-    "vehicleHasHistory": "У этого автомобиля есть бронирования или аренды — удалить нельзя."
+    "vehicleHasHistory": "У этого автомобиля есть бронирования или аренды — удалить нельзя.",
+    "memberRequired": "Выберите существующего клиента или укажите имя и email нового.",
+    "noTariff": "Для этого типа автомобиля ещё не настроен тариф. Настройте его в Настройки → Тарифы.",
+    "vehicleNotAvailable": "Этот автомобиль сейчас нельзя выдать в аренду.",
+    "rentalNotActive": "Эта аренда уже завершена.",
+    "odometerTooLow": "Показание одометра при возврате не может быть меньше, чем при выдаче."
+  },
+  "nav": {
+    "fleet": "Автопарк",
+    "rentals": "Аренды",
+    "reports": "Отчёты",
+    "settings": "Тарифы"
   },
   "fleet": {
     "title": "Автопарк",
@@ -119,6 +130,85 @@
       "note": "Комментарий",
       "pickup": "Выдан",
       "return": "Возвращён"
+    },
+    "checkOut": "Выдать в аренду",
+    "viewActiveRental": "Текущая аренда",
+    "expenses": "Расходы",
+    "expenseCategory": "Категория",
+    "expenseAmount": "Сумма",
+    "expenseDate": "Дата",
+    "expenseNotes": "Комментарий (необязательно)",
+    "addExpense": "Добавить расход",
+    "expenseCategoryLabel": {
+      "repair": "Ремонт",
+      "insurance": "Страховка",
+      "fuel": "Топливо",
+      "wash": "Мойка",
+      "fine": "Штраф"
     }
+  },
+  "rentals": {
+    "title": "Аренды",
+    "active": "Активные",
+    "noActive": "Сейчас нет активных аренд.",
+    "recent": "Недавно завершённые",
+    "noRecent": "Завершённых аренд пока нет.",
+    "checkoutTitle": "Выдача автомобиля",
+    "customer": "Клиент",
+    "existingCustomer": "Существующий клиент",
+    "newCustomer": "Новый клиент",
+    "customerName": "Имя",
+    "customerEmail": "Email",
+    "customerPhone": "Телефон (необязательно)",
+    "expectedReturn": "Ожидаемый возврат (необязательно)",
+    "extras": "Дополнительно",
+    "extraType": {
+      "equipment": "Оборудование",
+      "service": "Услуга",
+      "insurance": "Страховка",
+      "additional_driver": "Доп. водитель"
+    },
+    "extraLabelPlaceholder": "например, детское кресло",
+    "addExtra": "Добавить",
+    "remove": "Удалить",
+    "startRental": "Начать аренду",
+    "rentalFor": "Аренда для",
+    "startedAt": "Начало",
+    "estimatedSoFar": "Начислено на данный момент",
+    "includesLateFee": "включая штраф за опоздание",
+    "returnVehicle": "Вернуть автомобиль",
+    "odometerEnd": "Пробег при возврате",
+    "finalCharge": "Итоговая сумма",
+    "subtotal": "Подытог",
+    "lateFee": "Штраф за опоздание",
+    "tax": "Налог",
+    "total": "Итого",
+    "returnedAt": "Возвращён"
+  },
+  "tariffs": {
+    "title": "Тарифы",
+    "subtitle": "Что вы берёте по умолчанию и, при необходимости, отдельно по типу автомобиля.",
+    "defaultTariff": "Тариф по умолчанию",
+    "perTypeTariffs": "Тарифы по типам",
+    "addPerTypeTariff": "Добавить тариф для типа",
+    "vehicleType": "Тип автомобиля",
+    "allTypesDefault": "Все типы (по умолчанию)",
+    "currency": "Валюта",
+    "gracePeriodMinutes": "Льготный период (минут)",
+    "hourlyRate": "Почасовая ставка",
+    "dailyRate": "Суточная ставка",
+    "weeklyRate": "Недельная ставка",
+    "lateFeePerHour": "Штраф за час опоздания",
+    "save": "Сохранить"
+  },
+  "reports": {
+    "title": "Отчёты",
+    "apply": "Применить",
+    "revenue": "Выручка",
+    "expenses": "Расходы",
+    "profit": "Прибыль",
+    "vehicle": "Автомобиль",
+    "rentals": "Аренды",
+    "empty": "За этот период активности пока нет."
   }
 }

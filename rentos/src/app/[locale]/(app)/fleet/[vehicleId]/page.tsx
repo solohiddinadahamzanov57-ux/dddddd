@@ -6,9 +6,12 @@ import { FuelGauge } from "@/components/vehicles/fuel-gauge";
 import { StatusBadge } from "@/components/vehicles/status-badge";
 import { VehicleCard3D } from "@/components/vehicles/vehicle-card-3d";
 import { VehicleForm } from "@/components/vehicles/vehicle-form";
+import { Link } from "@/i18n/navigation";
+import { formatMinor } from "@/lib/billing/money";
 import { createClient } from "@/lib/supabase/server";
 
-import { updateVehicle } from "../actions";
+import { addExpense, updateVehicle } from "../actions";
+import { ExpenseForm } from "./expense-form";
 import { DeleteButton, StatusControl } from "./status-control";
 import { VehicleLog } from "./vehicle-log";
 
@@ -36,6 +39,23 @@ export default async function VehicleDetailPage({
     .order("occurred_at", { ascending: false })
     .limit(50);
 
+  const { data: activeRental } =
+    vehicle.status === "rented"
+      ? await supabase
+          .from("rentals")
+          .select("id")
+          .eq("vehicle_id", vehicleId)
+          .eq("status", "active")
+          .maybeSingle()
+      : { data: null };
+
+  const { data: expenses } = await supabase
+    .from("expenses")
+    .select("id, category, amount_minor, currency, occurred_on, notes")
+    .eq("vehicle_id", vehicleId)
+    .order("occurred_on", { ascending: false })
+    .limit(20);
+
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8">
       <div className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)]">
@@ -53,6 +73,22 @@ export default async function VehicleDetailPage({
             </div>
             <StatusBadge status={vehicle.status} />
           </div>
+          {vehicle.status === "available" && (
+            <Link
+              href={`/fleet/${vehicle.id}/checkout`}
+              className="self-start rounded-md bg-[var(--color-accent)] px-3 py-1.5 text-sm font-medium text-[var(--color-accent-contrast)]"
+            >
+              {t("checkOut")}
+            </Link>
+          )}
+          {vehicle.status === "rented" && activeRental && (
+            <Link
+              href={`/rentals/${activeRental.id}`}
+              className="self-start rounded-md bg-[var(--color-accent)] px-3 py-1.5 text-sm font-medium text-[var(--color-accent-contrast)]"
+            >
+              {t("viewActiveRental")}
+            </Link>
+          )}
           <FuelGauge
             level={vehicle.fuel_or_charge_level}
             fuelType={vehicle.fuel_type}
@@ -92,6 +128,28 @@ export default async function VehicleDetailPage({
       <section className="flex flex-col gap-3">
         <h2 className="text-lg text-[var(--color-text)]">{t("vehicleLog")}</h2>
         <VehicleLog entries={logs ?? []} />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg text-[var(--color-text)]">{t("expenses")}</h2>
+        <ExpenseForm action={addExpense.bind(null, vehicle.id)} />
+        {expenses && expenses.length > 0 && (
+          <ul className="flex flex-col gap-1 text-sm">
+            {expenses.map((e) => (
+              <li key={e.id} className="flex justify-between text-[var(--color-text)]">
+                <span>
+                  {t(`expenseCategoryLabel.${e.category}`)}
+                  {e.notes && (
+                    <span className="text-[var(--color-text-muted)]"> &middot; {e.notes}</span>
+                  )}
+                </span>
+                <span className="tabular shrink-0">
+                  {formatMinor(e.amount_minor, e.currency, locale)} &middot; {e.occurred_on}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section className="border-t border-[var(--color-border)] pt-4">

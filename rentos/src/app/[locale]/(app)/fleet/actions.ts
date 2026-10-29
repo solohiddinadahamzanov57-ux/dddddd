@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { redirect } from "@/i18n/navigation";
+import { expenseFormSchema } from "@/lib/billing/schemas";
 import { randomBarcode } from "@/lib/vehicles/barcode";
 import { statusChangeSchema, vehicleFormSchema } from "@/lib/vehicles/schemas";
 import { modelGlbKeyFor } from "@/lib/vehicles/types";
@@ -239,4 +240,49 @@ export async function deleteVehicle(
 
   revalidatePath("/fleet");
   return redirect({ href: "/fleet", locale });
+}
+
+export async function addExpense(
+  vehicleId: string,
+  formData: FormData,
+): Promise<{ error?: string }> {
+  const parsed = expenseFormSchema.safeParse({
+    category: formData.get("category"),
+    amountMinor: formData.get("amountMinor"),
+    occurredOn: formData.get("occurredOn"),
+    notes: formData.get("notes") || undefined,
+  });
+  if (!parsed.success) {
+    return { error: "errors.generic" };
+  }
+
+  const supabase = await createClient();
+  const { data: vehicle } = await supabase
+    .from("vehicles")
+    .select("company_id, companies(default_currency)")
+    .eq("id", vehicleId)
+    .maybeSingle();
+  if (!vehicle) {
+    return { error: "errors.generic" };
+  }
+  const { data: account } = await supabase.from("accounts").select("id").limit(1).maybeSingle();
+
+  const { error } = await supabase.from("expenses").insert({
+    company_id: vehicle.company_id,
+    vehicle_id: vehicleId,
+    category: parsed.data.category,
+    amount_minor: parsed.data.amountMinor,
+    currency: vehicle.companies?.default_currency ?? "USD",
+    occurred_on: parsed.data.occurredOn,
+    notes: parsed.data.notes ?? "",
+    created_by_account_id: account?.id ?? null,
+  });
+
+  if (error) {
+    console.error("addExpense failed:", error);
+    return { error: "errors.generic" };
+  }
+
+  revalidatePath(`/fleet/${vehicleId}`);
+  return {};
 }
