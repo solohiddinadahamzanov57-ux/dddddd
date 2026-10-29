@@ -192,17 +192,49 @@ function writeModel(filename, build) {
     .setAlphaMode("BLEND")
     .setMetallicFactor(0.2)
     .setRoughnessFactor(0.1);
+  const headlight = doc
+    .createMaterial("headlight")
+    .setBaseColorFactor([0.96, 0.97, 0.9, 1])
+    .setEmissiveFactor([0.5, 0.5, 0.42])
+    .setMetallicFactor(0)
+    .setRoughnessFactor(0.3);
+  const taillight = doc
+    .createMaterial("taillight")
+    .setBaseColorFactor([0.7, 0.08, 0.07, 1])
+    .setEmissiveFactor([0.35, 0.02, 0.02])
+    .setMetallicFactor(0)
+    .setRoughnessFactor(0.3);
+  const trim = doc
+    .createMaterial("trim")
+    .setBaseColorFactor([0.12, 0.12, 0.13, 1])
+    .setMetallicFactor(0.3)
+    .setRoughnessFactor(0.6);
 
   const bodyBuf = newBuf();
   const wheelBuf = newBuf();
   const glassBuf = newBuf();
-  build({ bodyBuf, wheelBuf, glassBuf, addBox, addWheel });
+  const headlightBuf = newBuf();
+  const taillightBuf = newBuf();
+  const trimBuf = newBuf();
+  build({
+    bodyBuf,
+    wheelBuf,
+    glassBuf,
+    headlightBuf,
+    taillightBuf,
+    trimBuf,
+    addBox,
+    addWheel,
+  });
 
   const mesh = doc.createMesh();
   for (const [buf, mat] of [
     [bodyBuf, body],
     [wheelBuf, wheel],
     [glassBuf, glass],
+    [headlightBuf, headlight],
+    [taillightBuf, taillight],
+    [trimBuf, trim],
   ]) {
     if (buf.positions.length > 0) {
       mesh.addPrimitive(buildPrimitive(doc, buf, mat));
@@ -219,38 +251,114 @@ function writeModel(filename, build) {
 }
 
 const models = {
-  "sedan.glb": ({ bodyBuf, wheelBuf, addBox, addWheel }) => {
+  "sedan.glb": ({
+    bodyBuf,
+    wheelBuf,
+    glassBuf,
+    headlightBuf,
+    taillightBuf,
+    trimBuf,
+    addBox,
+    addWheel,
+  }) => {
     addBox(bodyBuf, 0, 0.35, 0, 1.78, 0.55, 4.4);
     addBox(bodyBuf, 0, 0.92, -0.15, 1.5, 0.58, 2.2);
+    addBox(glassBuf, 0, 0.92, 0.95, 1.3, 0.5, 0.06); // windshield
+    addBox(glassBuf, 0, 0.92, -1.25, 1.3, 0.46, 0.06); // rear window
+    for (const x of [-0.76, 0.76]) addBox(glassBuf, x, 0.95, -0.15, 0.04, 0.38, 1.7); // side glass
+    for (const x of [-0.55, 0.55]) addBox(headlightBuf, x, 0.35, 2.17, 0.28, 0.16, 0.08);
+    for (const x of [-0.55, 0.55]) addBox(taillightBuf, x, 0.35, -2.17, 0.28, 0.16, 0.08);
+    for (const x of [-0.85, 0.85]) addBox(trimBuf, x, 0.98, 0.6, 0.1, 0.08, 0.14); // mirrors
     for (const x of [-0.95, 0.95])
       for (const z of [-1.55, 1.55]) addWheel(wheelBuf, x, 0.32, z, 0.32, 0.22);
   },
-  "hatchback.glb": ({ bodyBuf, wheelBuf, addBox, addWheel }) => {
+  "hatchback.glb": ({
+    bodyBuf,
+    wheelBuf,
+    glassBuf,
+    headlightBuf,
+    taillightBuf,
+    trimBuf,
+    addBox,
+    addWheel,
+  }) => {
     addBox(bodyBuf, 0, 0.35, 0, 1.76, 0.55, 3.9);
     addBox(bodyBuf, 0, 0.92, -0.35, 1.5, 0.58, 2.8);
+    addBox(glassBuf, 0, 0.92, 1.05, 1.3, 0.5, 0.06);
+    addBox(glassBuf, 0, 0.92, -1.75, 1.3, 0.46, 0.06);
+    for (const x of [-0.76, 0.76]) addBox(glassBuf, x, 0.95, -0.35, 0.04, 0.38, 2.2);
+    for (const x of [-0.54, 0.54]) addBox(headlightBuf, x, 0.35, 1.92, 0.28, 0.16, 0.08);
+    for (const x of [-0.54, 0.54]) addBox(taillightBuf, x, 0.35, -1.92, 0.26, 0.3, 0.08);
+    for (const x of [-0.85, 0.85]) addBox(trimBuf, x, 0.98, 0.75, 0.1, 0.08, 0.14);
     for (const x of [-0.94, 0.94])
       for (const z of [-1.35, 1.35]) addWheel(wheelBuf, x, 0.32, z, 0.32, 0.22);
   },
-  "suv.glb": ({ bodyBuf, wheelBuf, addBox, addWheel }) => {
+  "suv.glb": ({
+    bodyBuf,
+    wheelBuf,
+    glassBuf,
+    headlightBuf,
+    taillightBuf,
+    trimBuf,
+    addBox,
+    addWheel,
+  }) => {
     addBox(bodyBuf, 0, 0.45, 0, 1.86, 0.75, 4.5);
     addBox(bodyBuf, 0, 1.17, -0.1, 1.6, 0.85, 3.0);
+    addBox(glassBuf, 0, 1.15, 1.4, 1.4, 0.55, 0.07);
+    addBox(glassBuf, 0, 1.15, -1.6, 1.4, 0.5, 0.07);
+    for (const x of [-0.81, 0.81]) addBox(glassBuf, x, 1.2, -0.1, 0.04, 0.4, 2.4);
+    for (const x of [-0.58, 0.58]) addBox(headlightBuf, x, 0.45, 2.22, 0.3, 0.2, 0.09);
+    for (const x of [-0.58, 0.58]) addBox(taillightBuf, x, 0.45, -2.22, 0.3, 0.2, 0.09);
+    for (const x of [-0.92, 0.92]) addBox(trimBuf, x, 1.2, 1.0, 0.1, 0.09, 0.16);
     for (const x of [-0.98, 0.98])
       for (const z of [-1.6, 1.6]) addWheel(wheelBuf, x, 0.37, z, 0.37, 0.24);
   },
-  "van.glb": ({ bodyBuf, wheelBuf, addBox, addWheel }) => {
+  "van.glb": ({
+    bodyBuf,
+    wheelBuf,
+    glassBuf,
+    headlightBuf,
+    taillightBuf,
+    trimBuf,
+    addBox,
+    addWheel,
+  }) => {
     addBox(bodyBuf, 0, 1.0, 0, 1.9, 1.9, 4.5);
+    addBox(glassBuf, 0, 1.3, 2.25, 1.5, 0.7, 0.08);
+    for (const x of [-0.96, 0.96]) addBox(glassBuf, x, 1.3, 1.3, 0.04, 0.5, 0.9);
+    for (const x of [-0.6, 0.6]) addBox(headlightBuf, x, 0.5, 2.26, 0.3, 0.18, 0.08);
+    for (const x of [-0.6, 0.6]) addBox(taillightBuf, x, 0.5, -2.26, 0.3, 0.3, 0.08);
+    for (const x of [-0.99, 0.99]) addBox(trimBuf, x, 1.3, 1.9, 0.1, 0.1, 0.18);
     for (const x of [-1.0, 1.0])
       for (const z of [-1.5, 1.5]) addWheel(wheelBuf, x, 0.37, z, 0.37, 0.24);
   },
-  "pickup.glb": ({ bodyBuf, wheelBuf, addBox, addWheel }) => {
+  "pickup.glb": ({
+    bodyBuf,
+    wheelBuf,
+    glassBuf,
+    headlightBuf,
+    taillightBuf,
+    trimBuf,
+    addBox,
+    addWheel,
+  }) => {
     addBox(bodyBuf, 0, 0.4, 0, 1.85, 0.6, 5.1);
     addBox(bodyBuf, 0, 1.0, 1.25, 1.65, 0.65, 1.9);
+    addBox(glassBuf, 0, 1.0, 2.2, 1.45, 0.55, 0.07);
+    addBox(glassBuf, 0, 1.0, 0.3, 1.45, 0.5, 0.07);
+    for (const x of [-0.84, 0.84]) addBox(glassBuf, x, 1.02, 1.25, 0.04, 0.4, 0.85);
+    for (const x of [-0.58, 0.58]) addBox(headlightBuf, x, 0.4, 2.57, 0.3, 0.18, 0.08);
+    for (const x of [-0.58, 0.58]) addBox(taillightBuf, x, 0.4, -2.57, 0.26, 0.22, 0.08);
+    for (const x of [-0.94, 0.94]) addBox(trimBuf, x, 1.05, 2.0, 0.1, 0.09, 0.16);
     for (const x of [-0.98, 0.98])
       for (const z of [-1.9, 0.9]) addWheel(wheelBuf, x, 0.35, z, 0.35, 0.24);
   },
-  "motorcycle.glb": ({ bodyBuf, wheelBuf, addBox, addWheel }) => {
+  "motorcycle.glb": ({ bodyBuf, wheelBuf, headlightBuf, taillightBuf, addBox, addWheel }) => {
     addBox(bodyBuf, 0, 0.62, 0.1, 0.42, 0.34, 1.5);
     addBox(bodyBuf, 0, 0.82, -0.35, 0.3, 0.14, 0.55);
+    addBox(headlightBuf, 0, 0.68, 0.87, 0.14, 0.12, 0.06);
+    addBox(taillightBuf, 0, 0.85, -0.63, 0.12, 0.08, 0.05);
     addWheel(wheelBuf, 0, 0.33, 0.78, 0.33, 0.14);
     addWheel(wheelBuf, 0, 0.33, -0.78, 0.33, 0.14);
   },
