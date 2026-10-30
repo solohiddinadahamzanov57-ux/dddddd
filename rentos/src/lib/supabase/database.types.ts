@@ -79,6 +79,25 @@ export type Database = {
         };
         Relationships: [];
       };
+      contract_templates: {
+        Row: {
+          body: string;
+          locale: string;
+          version: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          body: string;
+          locale: string;
+          version: string;
+        };
+        Update: {
+          body?: string;
+          locale?: string;
+          version?: string;
+        };
+        Relationships: [];
+      };
       expenses: {
         Row: {
           amount_minor: number;
@@ -137,6 +156,157 @@ export type Database = {
             columns: ["vehicle_id"];
             isOneToOne: false;
             referencedRelation: "vehicles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      handover_photos: {
+        Row: {
+          angle: Database["public"]["Enums"]["photo_angle"];
+          company_id: string;
+          created_at: string;
+          id: string;
+          phase: Database["public"]["Enums"]["photo_phase"];
+          rental_id: string | null;
+          reservation_id: string;
+          storage_path: string;
+          taken_by_account_id: string;
+          vehicle_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          angle: Database["public"]["Enums"]["photo_angle"];
+          company_id: string;
+          created_at?: string;
+          id?: string;
+          phase: Database["public"]["Enums"]["photo_phase"];
+          rental_id?: string | null;
+          reservation_id: string;
+          storage_path: string;
+          taken_by_account_id: string;
+          vehicle_id: string;
+        };
+        Update: {
+          angle?: Database["public"]["Enums"]["photo_angle"];
+          company_id?: string;
+          created_at?: string;
+          id?: string;
+          phase?: Database["public"]["Enums"]["photo_phase"];
+          rental_id?: string | null;
+          reservation_id?: string;
+          storage_path?: string;
+          taken_by_account_id?: string;
+          vehicle_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "handover_photos_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "handover_photos_rental_id_fkey";
+            columns: ["rental_id"];
+            isOneToOne: false;
+            referencedRelation: "rentals";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "handover_photos_reservation_id_fkey";
+            columns: ["reservation_id"];
+            isOneToOne: false;
+            referencedRelation: "reservations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "handover_photos_taken_by_account_id_fkey";
+            columns: ["taken_by_account_id"];
+            isOneToOne: false;
+            referencedRelation: "accounts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "handover_photos_vehicle_id_fkey";
+            columns: ["vehicle_id"];
+            isOneToOne: false;
+            referencedRelation: "vehicles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      identity_verifications: {
+        Row: {
+          age_confirmed: boolean;
+          company_id: string;
+          created_at: string;
+          id: string;
+          license_valid_until: string | null;
+          member_account_id: string;
+          provider: string;
+          provider_ref: string | null;
+          reservation_id: string;
+          reviewed_at: string | null;
+          reviewed_by_account_id: string | null;
+          status: Database["public"]["Enums"]["verification_status"];
+        };
+        ComputedFields: never;
+        Insert: {
+          age_confirmed?: boolean;
+          company_id: string;
+          created_at?: string;
+          id?: string;
+          license_valid_until?: string | null;
+          member_account_id: string;
+          provider?: string;
+          provider_ref?: string | null;
+          reservation_id: string;
+          reviewed_at?: string | null;
+          reviewed_by_account_id?: string | null;
+          status?: Database["public"]["Enums"]["verification_status"];
+        };
+        Update: {
+          age_confirmed?: boolean;
+          company_id?: string;
+          created_at?: string;
+          id?: string;
+          license_valid_until?: string | null;
+          member_account_id?: string;
+          provider?: string;
+          provider_ref?: string | null;
+          reservation_id?: string;
+          reviewed_at?: string | null;
+          reviewed_by_account_id?: string | null;
+          status?: Database["public"]["Enums"]["verification_status"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "identity_verifications_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "identity_verifications_member_account_id_fkey";
+            columns: ["member_account_id"];
+            isOneToOne: false;
+            referencedRelation: "accounts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "identity_verifications_reservation_id_fkey";
+            columns: ["reservation_id"];
+            isOneToOne: true;
+            referencedRelation: "reservations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "identity_verifications_reviewed_by_account_id_fkey";
+            columns: ["reviewed_by_account_id"];
+            isOneToOne: false;
+            referencedRelation: "accounts";
             referencedColumns: ["id"];
           },
         ];
@@ -289,6 +459,68 @@ export type Database = {
             foreignKeyName: "payments_reservation_id_fkey";
             columns: ["reservation_id"];
             isOneToOne: false;
+            referencedRelation: "reservations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      rental_agreements: {
+        Row: {
+          company_id: string;
+          contract_sha256: string;
+          contract_text: string;
+          contract_version: string;
+          id: string;
+          locale: string;
+          member_account_id: string;
+          reservation_id: string;
+          signed_at: string;
+          signed_name: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          company_id: string;
+          contract_sha256: string;
+          contract_text: string;
+          contract_version: string;
+          id?: string;
+          locale: string;
+          member_account_id: string;
+          reservation_id: string;
+          signed_at?: string;
+          signed_name: string;
+        };
+        Update: {
+          company_id?: string;
+          contract_sha256?: string;
+          contract_text?: string;
+          contract_version?: string;
+          id?: string;
+          locale?: string;
+          member_account_id?: string;
+          reservation_id?: string;
+          signed_at?: string;
+          signed_name?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "rental_agreements_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "rental_agreements_member_account_id_fkey";
+            columns: ["member_account_id"];
+            isOneToOne: false;
+            referencedRelation: "accounts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "rental_agreements_reservation_id_fkey";
+            columns: ["reservation_id"];
+            isOneToOne: true;
             referencedRelation: "reservations";
             referencedColumns: ["id"];
           },
@@ -455,6 +687,58 @@ export type Database = {
           },
         ];
       };
+      reservation_deposits: {
+        Row: {
+          amount_minor: number;
+          company_id: string;
+          created_at: string;
+          currency: string;
+          provider: string;
+          provider_ref: string | null;
+          reservation_id: string;
+          status: Database["public"]["Enums"]["deposit_status"];
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount_minor: number;
+          company_id: string;
+          created_at?: string;
+          currency: string;
+          provider?: string;
+          provider_ref?: string | null;
+          reservation_id: string;
+          status?: Database["public"]["Enums"]["deposit_status"];
+          updated_at?: string;
+        };
+        Update: {
+          amount_minor?: number;
+          company_id?: string;
+          created_at?: string;
+          currency?: string;
+          provider?: string;
+          provider_ref?: string | null;
+          reservation_id?: string;
+          status?: Database["public"]["Enums"]["deposit_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "reservation_deposits_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reservation_deposits_reservation_id_fkey";
+            columns: ["reservation_id"];
+            isOneToOne: true;
+            referencedRelation: "reservations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       reservations: {
         Row: {
           company_id: string;
@@ -558,6 +842,7 @@ export type Database = {
           created_at: string;
           currency: string;
           daily_rate_minor: number;
+          deposit_minor: number;
           grace_period_minutes: number;
           hourly_rate_minor: number;
           id: string;
@@ -573,6 +858,7 @@ export type Database = {
           created_at?: string;
           currency: string;
           daily_rate_minor: number;
+          deposit_minor?: number;
           grace_period_minutes?: number;
           hourly_rate_minor: number;
           id?: string;
@@ -587,6 +873,7 @@ export type Database = {
           created_at?: string;
           currency?: string;
           daily_rate_minor?: number;
+          deposit_minor?: number;
           grace_period_minutes?: number;
           hourly_rate_minor?: number;
           id?: string;
@@ -602,6 +889,43 @@ export type Database = {
             columns: ["company_id"];
             isOneToOne: false;
             referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      vehicle_keyboxes: {
+        Row: {
+          code: string;
+          company_id: string;
+          updated_at: string;
+          vehicle_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          code: string;
+          company_id: string;
+          updated_at?: string;
+          vehicle_id: string;
+        };
+        Update: {
+          code?: string;
+          company_id?: string;
+          updated_at?: string;
+          vehicle_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_keyboxes_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "vehicle_keyboxes_vehicle_id_fkey";
+            columns: ["vehicle_id"];
+            isOneToOne: true;
+            referencedRelation: "vehicles";
             referencedColumns: ["id"];
           },
         ];
@@ -743,6 +1067,26 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      can_access_handover_object: { Args: { p_name: string }; Returns: boolean };
+      contactless_status: {
+        Args: { p_reservation_id: string };
+        Returns: {
+          agreement_signed: boolean;
+          all_ok: boolean;
+          can_unlock: boolean;
+          deposit_ok: boolean;
+          deposit_required_minor: number;
+          deposit_status: Database["public"]["Enums"]["deposit_status"];
+          identity_ok: boolean;
+          identity_status: Database["public"]["Enums"]["verification_status"];
+          in_pickup_window: boolean;
+          keybox_configured: boolean;
+          photos_ok: boolean;
+          photos_present: number;
+          rental_id: string;
+          reservation_confirmed: boolean;
+        }[];
+      };
       create_company: {
         Args: {
           p_default_currency: string;
@@ -770,6 +1114,7 @@ export type Database = {
         };
       };
       current_company_ids: { Args: Record<PropertyKey, never>; Returns: string[] };
+      current_contract_version: { Args: Record<PropertyKey, never>; Returns: string };
       current_role_in_company: {
         Args: { target_company_id: string };
         Returns: Database["public"]["Enums"]["account_role"];
@@ -813,6 +1158,7 @@ export type Database = {
         Returns: {
           currency: string;
           daily_rate_minor: number;
+          deposit_minor: number;
           grace_period_minutes: number;
           hourly_rate_minor: number;
           late_fee_per_hour_minor: number;
@@ -832,6 +1178,33 @@ export type Database = {
           vehicle_id: string;
         }[];
       };
+      render_rental_agreement: {
+        Args: { p_locale?: string; p_reservation_id: string };
+        Returns: {
+          body: string;
+          version: string;
+        }[];
+      };
+      request_deposit: {
+        Args: { p_reservation_id: string };
+        Returns: {
+          amount_minor: number;
+          company_id: string;
+          created_at: string;
+          currency: string;
+          provider: string;
+          provider_ref: string | null;
+          reservation_id: string;
+          status: Database["public"]["Enums"]["deposit_status"];
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "reservation_deposits";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       search_available_vehicles: {
         Args: {
           p_company_slug: string;
@@ -849,6 +1222,34 @@ export type Database = {
           vehicle_id: string;
         }[];
       };
+      sign_rental_agreement: {
+        Args: { p_locale?: string; p_reservation_id: string; p_signed_name: string };
+        Returns: {
+          company_id: string;
+          contract_sha256: string;
+          contract_text: string;
+          contract_version: string;
+          id: string;
+          locale: string;
+          member_account_id: string;
+          reservation_id: string;
+          signed_at: string;
+          signed_name: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "rental_agreements";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      start_contactless_pickup: {
+        Args: { p_reservation_id: string };
+        Returns: {
+          keybox_code: string;
+          rental_id: string;
+        }[];
+      };
       vehicle_profit_report: {
         Args: { p_company_id: string; p_from: string; p_to: string };
         Returns: {
@@ -864,6 +1265,7 @@ export type Database = {
     };
     Enums: {
       account_role: "owner" | "receptionist" | "worker" | "member";
+      deposit_status: "pending" | "held" | "released" | "captured";
       expense_category: "repair" | "insurance" | "fuel" | "wash" | "fine";
       extra_item_type: "equipment" | "service" | "additional_driver" | "insurance";
       fuel_type: "gasoline" | "diesel" | "electric" | "hybrid" | "other";
@@ -880,11 +1282,21 @@ export type Database = {
         | "reservation_confirmed";
       payment_method: "card" | "cash" | "other";
       payment_status: "pending" | "succeeded" | "failed" | "refunded";
+      photo_angle: "front" | "rear" | "left" | "right" | "interior" | "dashboard";
+      photo_phase: "pickup" | "return";
       rental_status: "active" | "completed";
       reservation_status: "pending" | "confirmed" | "cancelled" | "completed" | "no_show";
-      vehicle_log_event: "status_change" | "inspection" | "service" | "note" | "pickup" | "return";
+      vehicle_log_event:
+        | "status_change"
+        | "inspection"
+        | "service"
+        | "note"
+        | "pickup"
+        | "return"
+        | "keybox_release";
       vehicle_status: "available" | "rented" | "service";
       vehicle_type: "car" | "truck" | "suv" | "van" | "motorcycle";
+      verification_status: "pending" | "approved" | "rejected";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -997,6 +1409,7 @@ export const Constants = {
   public: {
     Enums: {
       account_role: ["owner", "receptionist", "worker", "member"],
+      deposit_status: ["pending", "held", "released", "captured"],
       expense_category: ["repair", "insurance", "fuel", "wash", "fine"],
       extra_item_type: ["equipment", "service", "additional_driver", "insurance"],
       fuel_type: ["gasoline", "diesel", "electric", "hybrid", "other"],
@@ -1014,11 +1427,22 @@ export const Constants = {
       ],
       payment_method: ["card", "cash", "other"],
       payment_status: ["pending", "succeeded", "failed", "refunded"],
+      photo_angle: ["front", "rear", "left", "right", "interior", "dashboard"],
+      photo_phase: ["pickup", "return"],
       rental_status: ["active", "completed"],
       reservation_status: ["pending", "confirmed", "cancelled", "completed", "no_show"],
-      vehicle_log_event: ["status_change", "inspection", "service", "note", "pickup", "return"],
+      vehicle_log_event: [
+        "status_change",
+        "inspection",
+        "service",
+        "note",
+        "pickup",
+        "return",
+        "keybox_release",
+      ],
       vehicle_status: ["available", "rented", "service"],
       vehicle_type: ["car", "truck", "suv", "van", "motorcycle"],
+      verification_status: ["pending", "approved", "rejected"],
     },
   },
 } as const;

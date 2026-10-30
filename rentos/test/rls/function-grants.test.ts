@@ -46,6 +46,11 @@ describe.skipIf(!pgAvailable)("authenticated-only functions reject anon", () => 
       `select * from public.vehicle_profit_report('00000000-0000-0000-0000-000000000000', now(), now())`,
     ],
     ["join_company_as_member", `select public.join_company_as_member('x')`],
+    // Trigger functions: run by their triggers only, never callable over the API.
+    ["set_updated_at", `select public.set_updated_at()`],
+    ["forbid_company_id_change", `select public.forbid_company_id_change()`],
+    ["accounts_guard_update", `select public.accounts_guard_update()`],
+    ["log_vehicle_status_change", `select public.log_vehicle_status_change()`],
   ];
 
   for (const [name, sql] of deniedForAnon) {
