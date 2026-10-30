@@ -3,6 +3,87 @@
 Durable choices made along the way, and why, so later phases don't
 re-litigate them. Newest first.
 
+## Phase 3
+
+- **The public booking surface is a handful of `SECURITY DEFINER` functions,
+  not new RLS policies on the real tables.** `anon` gets zero table grants
+  it can use; `public_company_by_slug`, `public_vehicle_by_id`,
+  `search_available_vehicles`, and `public_tariff_for_vehicle_type`
+  (migration `20260104000000_public_booking.sql`) each return only the
+  specific, curated columns a public page needs. This means every future
+  column added to `vehicles`/`companies`/`tariffs` is private by default --
+  nobody has to remember to _not_ expose it publicly, since there's no
+  policy that would.
+
+- **Real finding while testing the above: a newly created Postgres
+  function gets `EXECUTE` granted to `anon`/`authenticated` directly at
+  creation time** (this project's default privileges mirror a real
+  Supabase project's), and `revoke all ... from public` does not take that
+  back from `anon` -- its grant doesn't come through the `public`
+  pseudo-role. This affected every "authenticated-only" function back to
+  Phase 0 (`create_company`, the auth helpers) and Phase 2
+  (`vehicle_profit_report`), though none of them could actually do
+  anything as `anon` (each checks `auth.uid()` itself, or is `SECURITY
+INVOKER` so RLS still applied inside it) -- so nothing was ever
+  exploitable, but `anon` shouldn't have been able to reach them at all.
+  Fixed in `20260104000100_harden_function_grants.sql` (a new migration,
+  not an edit to the already-written ones) with an explicit `revoke
+execute ... from anon` on each. `test/rls/function-grants.test.ts` is
+  what caught it and is what keeps it caught.
+
+- **A customer becomes a company's member via `join_company_as_member()`,
+  a narrow `SECURITY DEFINER` function**, not a general INSERT policy on
+  `accounts`. It can only create the lowest-privilege role ('member'),
+  only for `auth.uid()` (the caller themselves), only for a company that
+  already exists, and is idempotent (returns the existing row if one's
+  already there). This is the self-service parallel to Phase 0's
+  `create_company()` and Phase 2's staff-driven walk-in member creation --
+  three different trust levels (self-service customer, staff-on-behalf-of,
+  company owner), three different narrow paths, no general-purpose
+  "insert an account" escape hatch anywhere.
+
+- **One `auth.users` table and one set of sign-in/sign-up pages serve both
+  staff and customers.** Rather than a second, parallel auth system, the
+  existing pages gained an optional `next` query param
+  (`src/lib/auth/next-path.ts`) that sends a visitor back into the booking
+  flow after authenticating instead of into onboarding/the fleet
+  dashboard. `next` is validated against an allowlist (must start with
+  `/book/`) before ever being redirected to, since it's client-supplied --
+  otherwise the sign-in flow would be an open redirect.
+
+- **Reservation pricing is computed server-side, twice, from the same
+  function.** The quote shown while browsing (`calculateReservationQuote`,
+  a thin wrapper over `calculateRentalCharge` with no late fee and no
+  extras -- a reservation hasn't started yet) and the amount actually
+  charged via Stripe are both derived from the tariff looked up at submit
+  time, never from a price the client posted. The `tariff_snapshot` frozen
+  onto the reservation is what the eventual rental's checkout step will
+  read later, same as Phase 2.
+
+- **Stripe: a real integration, built against keys that don't exist yet.**
+  Same pattern as Supabase in Phase 0 -- `src/lib/stripe/client.ts` throws
+  a clear error if `STRIPE_SECRET_KEY` is unset rather than the app
+  crashing obscurely or silently pretending payment succeeded, and the
+  booking flow checks `isStripeConfigured()` to show "this company hasn't
+  set up online payment yet" instead of a broken checkout button. The
+  webhook (`src/app/api/stripe/webhook/route.ts`) verifies the Stripe
+  signature before doing anything, and uses the admin client to flip the
+  reservation to `confirmed` and the payment row to `succeeded` --
+  deliberately idempotent (`where status = 'pending'`) since Stripe
+  retries webhook deliveries.
+
+- **Not implemented, flagged rather than silently skipped:** Stripe
+  refunds on cancellation (cancelling a paid reservation right now doesn't
+  touch the Stripe charge -- a manual refund is needed until this exists),
+  WhatsApp/Telegram notifications (the brief itself defers these to
+  "later"), a location picker on the booking form, and localized
+  transactional email content (confirmation/cancellation emails are
+  English-only; the schema doesn't yet track a customer's preferred
+  locale). Email itself goes through `ConsoleEmailProvider`
+  (`src/lib/notifications/email.ts`) until a real provider's API key
+  exists -- it logs instead of sending, and every call site already goes
+  through the one function that will need to change.
+
 ## Phase 2
 
 - **Tariffs are one row per (company, vehicle type), with `vehicle_type IS

@@ -107,3 +107,18 @@ export function calculateRentalCharge(input: RentalChargeInput): RentalCharge {
     totalMinor,
   };
 }
+
+/** The upfront price quote for a reservation: no late fee (hasn't started yet) and no extras (not chosen until checkout). */
+export function calculateReservationQuote(
+  startAt: Date,
+  endAt: Date,
+  tariff: TariffInput,
+): RentalCharge {
+  return calculateRentalCharge({
+    startedAt: startAt,
+    endedAt: endAt,
+    expectedReturnAt: null,
+    tariff,
+    extrasMinor: 0,
+  });
+}

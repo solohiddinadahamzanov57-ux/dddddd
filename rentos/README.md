@@ -8,7 +8,7 @@ plan, and `docs/DECISIONS.md` for why things are built the way they are.
 > unrelated product (Driver Desk, at the repo root). They're independent;
 > nothing here touches it and nothing there touches this.
 
-**Status: Phases 0-2 complete.** Sign up, create a company (isolated by
+**Status: Phases 0-3 complete.** Sign up, create a company (isolated by
 Postgres Row Level Security -- proven by a test that runs the real
 migrations against a throwaway database, see `test/rls/`), manage a fleet
 (add/edit/delete vehicles, scan a barcode with the camera to find one,
@@ -18,13 +18,17 @@ running total, return it and get a final charge computed server-side
 (hourly/daily/weekly tiering, grace period, late fees -- all unit tested,
 including across DST transitions), log expenses, and see revenue/profit per
 vehicle and per period. A GiST exclusion constraint stops two reservations
-from ever double-booking the same vehicle.
+from ever double-booking the same vehicle. On top of that, a public,
+no-login-required booking page per company (`/book/[companySlug]`): search
+real availability by date and type, get a priced quote, reserve, and pay
+with Stripe Checkout (test mode) -- all without exposing a single table to
+the `anon` role directly (see `docs/DECISIONS.md`).
 
 ## Stack
 
 Next.js (App Router, TypeScript strict, Tailwind) + Supabase (Postgres,
-Auth, RLS) + `<model-viewer>` for the 3D vehicle cards + `next-intl`
-(English/Russian) + Vitest + Playwright. Stripe arrives in a later phase.
+Auth, RLS) + Stripe + `<model-viewer>` for the 3D vehicle cards +
+`next-intl` (English/Russian) + Vitest + Playwright.
 
 ## Setup
 

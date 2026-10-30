@@ -775,7 +775,80 @@ export type Database = {
         Returns: Database["public"]["Enums"]["account_role"];
       };
       is_staff_in_company: { Args: { target_company_id: string }; Returns: boolean };
+      join_company_as_member: {
+        Args: { p_company_slug: string };
+        Returns: {
+          company_id: string;
+          created_at: string;
+          full_name: string;
+          id: string;
+          phone: string | null;
+          role: Database["public"]["Enums"]["account_role"];
+          user_id: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "accounts";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       my_account_ids: { Args: Record<PropertyKey, never>; Returns: string[] };
+      public_company_by_slug: {
+        Args: { p_slug: string };
+        Returns: {
+          default_currency: string;
+          default_locale: string;
+          id: string;
+          name: string;
+          tax_rate_bps: number;
+          timezone: string;
+        }[];
+      };
+      public_tariff_for_vehicle_type: {
+        Args: {
+          p_company_slug: string;
+          p_vehicle_type: Database["public"]["Enums"]["vehicle_type"];
+        };
+        Returns: {
+          currency: string;
+          daily_rate_minor: number;
+          grace_period_minutes: number;
+          hourly_rate_minor: number;
+          late_fee_per_hour_minor: number;
+          weekly_rate_minor: number;
+        }[];
+      };
+      public_vehicle_by_id: {
+        Args: { p_vehicle_id: string };
+        Returns: {
+          color: string;
+          company_id: string;
+          fuel_type: Database["public"]["Enums"]["fuel_type"];
+          model: string;
+          model_glb_key: string;
+          subtype: string;
+          type: Database["public"]["Enums"]["vehicle_type"];
+          vehicle_id: string;
+        }[];
+      };
+      search_available_vehicles: {
+        Args: {
+          p_company_slug: string;
+          p_end_at: string;
+          p_start_at: string;
+          p_type?: Database["public"]["Enums"]["vehicle_type"];
+        };
+        Returns: {
+          color: string;
+          fuel_type: Database["public"]["Enums"]["fuel_type"];
+          model: string;
+          model_glb_key: string;
+          subtype: string;
+          type: Database["public"]["Enums"]["vehicle_type"];
+          vehicle_id: string;
+        }[];
+      };
       vehicle_profit_report: {
         Args: { p_company_id: string; p_from: string; p_to: string };
         Returns: {
@@ -803,7 +876,8 @@ export type Database = {
         | "overdue"
         | "reservation_cancelled"
         | "service_due"
-        | "insurance_expiring";
+        | "insurance_expiring"
+        | "reservation_confirmed";
       payment_method: "card" | "cash" | "other";
       payment_status: "pending" | "succeeded" | "failed" | "refunded";
       rental_status: "active" | "completed";
@@ -936,6 +1010,7 @@ export const Constants = {
         "reservation_cancelled",
         "service_due",
         "insurance_expiring",
+        "reservation_confirmed",
       ],
       payment_method: ["card", "cash", "other"],
       payment_status: ["pending", "succeeded", "failed", "refunded"],

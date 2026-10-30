@@ -37,7 +37,9 @@
     "noTariff": "No tariff is set up for this vehicle type yet. Set one in Settings → Tariffs first.",
     "vehicleNotAvailable": "This vehicle isn't available to check out right now.",
     "rentalNotActive": "This rental has already been returned.",
-    "odometerTooLow": "The return odometer reading can't be less than the pickup reading."
+    "odometerTooLow": "The return odometer reading can't be less than the pickup reading.",
+    "reservationNotCancellable": "This reservation can't be cancelled.",
+    "cancellationWindowPassed": "This reservation is too close to its start time to cancel online — please contact the company directly."
   },
   "nav": {
     "fleet": "Fleet",
@@ -210,5 +212,32 @@
     "vehicle": "Vehicle",
     "rentals": "Rentals",
     "empty": "No fleet activity in this period yet."
+  },
+  "booking": {
+    "title": "Book a vehicle from {company}",
+    "pickup": "Pick-up",
+    "dropoff": "Drop-off",
+    "vehicleType": "Vehicle type",
+    "search": "Search",
+    "noResults": "No vehicles available for these dates.",
+    "choosePrompt": "Choose your pick-up and drop-off times to see what's available.",
+    "priceQuote": "Price",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "total": "Total",
+    "priceDisclaimer": "Final price may include a late fee if the vehicle is returned after the agreed time.",
+    "continueToReserve": "Continue to reserve",
+    "confirmTitle": "Confirm your reservation",
+    "confirmReservation": "Confirm & reserve",
+    "reservationTitle": "Your reservation",
+    "status": "Status",
+    "statusPending": "Pending payment",
+    "statusConfirmed": "Confirmed",
+    "statusCancelled": "Cancelled",
+    "statusCompleted": "Completed",
+    "statusNoShow": "No-show",
+    "paymentNotConfigured": "Online payment isn't set up for this company yet — they'll confirm your reservation directly.",
+    "cancelReservation": "Cancel reservation",
+    "cancelConfirm": "Cancel this reservation?"
   }
 }

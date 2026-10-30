@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   calculateBaseCharge,
   calculateLateFee,
+  calculateReservationQuote,
   calculateRentalCharge,
   type TariffInput,
 } from "./fees";
@@ -182,5 +183,20 @@ describe("calculateRentalCharge", () => {
     });
     expect(charge.durationMinutes).toBe(24 * 60);
     expect(charge.baseMinor).toBe(tariff.dailyRateMinor);
+  });
+});
+
+describe("calculateReservationQuote", () => {
+  it("has no late fee or extras -- a reservation hasn't started yet", () => {
+    const quote = calculateReservationQuote(
+      new Date("2026-05-01T10:00:00Z"),
+      new Date("2026-05-03T10:00:00Z"),
+      { ...tariff, taxRateBps: 1000 },
+    );
+    expect(quote.lateFeeMinor).toBe(0);
+    expect(quote.extrasMinor).toBe(0);
+    expect(quote.baseMinor).toBe(2 * tariff.dailyRateMinor);
+    expect(quote.taxMinor).toBe(Math.round(quote.baseMinor * 0.1));
+    expect(quote.totalMinor).toBe(quote.baseMinor + quote.taxMinor);
   });
 });

@@ -2,12 +2,14 @@
 
 import { redirect } from "@/i18n/navigation";
 import { emailPasswordSchema } from "@/lib/auth/schemas";
+import { safeNextPath } from "@/lib/auth/next-path";
 import { createClient } from "@/lib/supabase/server";
 
 export type SignUpState = { error?: string; confirmEmail?: boolean };
 
 export async function signUp(
   locale: string,
+  next: string | null,
   _prevState: SignUpState,
   formData: FormData,
 ): Promise<SignUpState> {
@@ -32,5 +34,6 @@ export async function signUp(
     return { confirmEmail: true };
   }
 
-  return redirect({ href: "/onboarding", locale });
+  const safeNext = safeNextPath(next);
+  return redirect({ href: safeNext ?? "/onboarding", locale });
 }
