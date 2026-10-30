@@ -1,6 +1,5 @@
 "use client";
 
-import "@google/model-viewer";
 import { useEffect, useRef } from "react";
 
 import { colorToHex, hexToRgbaFactor } from "@/lib/vehicles/color";
@@ -26,6 +25,12 @@ export function VehicleCard3D({
   className?: string;
 }) {
   const ref = useRef<HTMLElement>(null);
+
+  // model-viewer touches `self` when it loads, which doesn't exist during
+  // server rendering. Registering the element from an effect keeps it browser-only.
+  useEffect(() => {
+    void import("@google/model-viewer");
+  }, []);
 
   useEffect(() => {
     const el = ref.current as ModelViewerElement | null;
