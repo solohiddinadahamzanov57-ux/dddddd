@@ -36,6 +36,12 @@ export async function createCompany(
   });
 
   if (error) {
+    console.error("create_company failed:", error);
+    // PGRST202 = function not in PostgREST's schema cache; 42883/42P01 = missing
+    // function/table. Almost always means supabase/setup.sql hasn't been run yet.
+    if (["PGRST202", "42883", "42P01"].includes(error.code ?? "")) {
+      return { error: "errors.databaseNotSetUp" };
+    }
     return { error: "errors.generic" };
   }
 

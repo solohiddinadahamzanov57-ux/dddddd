@@ -29,6 +29,7 @@
     "submit": "Создать компанию"
   },
   "errors": {
+    "databaseNotSetUp": "База данных ещё не настроена. Выполните supabase/setup.sql в SQL Editor Supabase и повторите попытку.",
     "generic": "Что-то пошло не так. Попробуйте снова.",
     "invalidCredentials": "Эта почта или пароль не подходят ни одному аккаунту.",
     "companyNameRequired": "Введите название компании.",

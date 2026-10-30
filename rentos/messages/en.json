@@ -29,6 +29,7 @@
     "submit": "Create company"
   },
   "errors": {
+    "databaseNotSetUp": "The database isn't set up yet. Run supabase/setup.sql in the Supabase SQL Editor, then try again.",
     "generic": "Something went wrong. Try again.",
     "invalidCredentials": "That email or password doesn't match an account.",
     "companyNameRequired": "Enter a company name.",

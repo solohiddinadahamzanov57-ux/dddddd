@@ -1051,3 +1051,6 @@ grant usage on schema public to anon, authenticated, service_role;
 grant select, insert, update, delete on all tables in schema public to authenticated, service_role;
 grant usage, select on all sequences in schema public to authenticated, service_role;
 
+
+-- Make the API pick up the new tables/functions immediately.
+notify pgrst, 'reload schema';
