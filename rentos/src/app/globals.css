@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens.
+ *
+ * Type pairing: Source Sans 3 (UI text, body copy) + Source Serif 4
+ * (headings only, upright -- no italics). Loaded in src/app/[locale]/layout.tsx.
+ *
+ * Spacing: strict 4px grid via Tailwind's default scale (spacing-1 = 4px).
+ * Don't use arbitrary px values outside that scale.
+ *
+ * Color: one accent (rental-blue), neutral surfaces, and semantic colors
+ * for vehicle/booking status that are reused everywhere a status appears
+ * (fleet dashboard, booking page, notifications) instead of being redefined
+ * per screen.
+ */
+
+:root {
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-border: #e2e4e8;
+  --color-text: #15181d;
+  --color-text-muted: #5a6170;
+
+  --color-accent: #1d4ed8;
+  --color-accent-contrast: #ffffff;
+
+  --color-status-available: #0f7b3d;
+  --color-status-available-bg: #e7f6ec;
+  --color-status-rented: #9a5b00;
+  --color-status-rented-bg: #fdf0dc;
+  --color-status-service: #b42318;
+  --color-status-service-bg: #fcebe9;
+  --color-status-overdue: #ffffff;
+  --color-status-overdue-bg: #b42318;
+}
+
+:root:not([data-theme="light"]) {
+  @media (prefers-color-scheme: dark) {
+    --color-surface: #11131a;
+    --color-surface-raised: #171a22;
+    --color-border: #2a2e3a;
+    --color-text: #eef0f4;
+    --color-text-muted: #9ba2b2;
+
+    --color-accent: #5b8def;
+    --color-accent-contrast: #0b1020;
+
+    --color-status-available: #4fd983;
+    --color-status-available-bg: #103321;
+    --color-status-rented: #f2b84b;
+    --color-status-rented-bg: #3a2b0c;
+    --color-status-service: #ff8577;
+    --color-status-service-bg: #3a1512;
+    --color-status-overdue: #11131a;
+    --color-status-overdue-bg: #ff8577;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-surface: #11131a;
+  --color-surface-raised: #171a22;
+  --color-border: #2a2e3a;
+  --color-text: #eef0f4;
+  --color-text-muted: #9ba2b2;
+
+  --color-accent: #5b8def;
+  --color-accent-contrast: #0b1020;
+
+  --color-status-available: #4fd983;
+  --color-status-available-bg: #103321;
+  --color-status-rented: #f2b84b;
+  --color-status-rented-bg: #3a2b0c;
+  --color-status-service: #ff8577;
+  --color-status-service-bg: #3a1512;
+  --color-status-overdue: #11131a;
+  --color-status-overdue-bg: #ff8577;
+}
+
+@theme inline {
+  --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-border: var(--color-border);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+  --color-accent: var(--color-accent);
+  --color-accent-contrast: var(--color-accent-contrast);
+  --color-status-available: var(--color-status-available);
+  --color-status-available-bg: var(--color-status-available-bg);
+  --color-status-rented: var(--color-status-rented);
+  --color-status-rented-bg: var(--color-status-rented-bg);
+  --color-status-service: var(--color-status-service);
+  --color-status-service-bg: var(--color-status-service-bg);
+  --color-status-overdue: var(--color-status-overdue);
+  --color-status-overdue-bg: var(--color-status-overdue-bg);
+
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-heading);
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading), ui-serif, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Tabular figures everywhere money or time is shown -- digits must not jitter. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
