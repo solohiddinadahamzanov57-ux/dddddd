@@ -71,14 +71,16 @@ describe.skipIf(!pgAvailable)("public booking surface (anon access)", () => {
     if (dbName) await dropTestDatabase(dbName);
   });
 
-  it("anon gets zero rows from the underlying tables directly (no policy grants it any)", async () => {
-    // anon has a baseline table-level SELECT grant (same as a real Supabase
-    // project), but RLS has no policy admitting anon on any of these tables,
-    // so every row is filtered out -- an empty result, not an error. The
-    // public_* functions above are the only way anon reaches this data.
-    expect((await anon.query(`select 1 from public.vehicles`)).rowCount).toBe(0);
-    expect((await anon.query(`select 1 from public.companies`)).rowCount).toBe(0);
-    expect((await anon.query(`select 1 from public.tariffs`)).rowCount).toBe(0);
+  it("anon cannot touch the underlying tables at all (no grants, and no policy admits it)", async () => {
+    // Supabase grants anon table privileges by default; the
+    // revoke_anon_table_grants migration removes them, so this is a hard
+    // permission error rather than an RLS-filtered empty result. The public_*
+    // functions above are the only way anon reaches this data.
+    for (const table of ["vehicles", "companies", "tariffs", "accounts", "reservations"]) {
+      await expect(anon.query(`select 1 from public.${table}`)).rejects.toThrow(
+        /permission denied/,
+      );
+    }
   });
 
   it("anon can look up a company by slug through the curated function", async () => {

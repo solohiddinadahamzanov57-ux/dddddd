@@ -335,3 +335,22 @@ DEFINER`)**, unlike `create_company()` or the auth-helper functions.
   `rentals` so the shape is ready), vehicle photo capture / GLB assets
   (Phase 1), and any invite-a-teammate or invite-a-member flow (needs its
   own `SECURITY DEFINER` function, Phase 1/2/3 depending on which role).
+
+## Hosted Supabase project
+
+- **Live backend is a dedicated Supabase project (`rentos`, eu-west-1).** The
+  schema was applied once as a single migration and then checked against the
+  repo's 19 migrations by fingerprinting columns, constraints, indexes,
+  policies, RLS flags, triggers, enums and grants on both sides; they match.
+  The only difference is stricter on the hosted side: trigger functions are
+  not executable by `anon`/`authenticated` (triggers fire regardless).
+- **`anon` has no table privileges (`20260105000100_revoke_anon_table_grants`).**
+  Supabase grants `anon` full access on every new `public` table by default.
+  RLS already returned zero rows to `anon`, but the booking page only ever
+  needs the `public_*` SECURITY DEFINER functions, so the grants are revoked
+  and default privileges changed so future tables don't get them. The RLS
+  test now asserts a hard `permission denied`, not an empty result.
+- **Supabase security advisor:** only WARN-level notes for the SECURITY
+  DEFINER functions that are intentionally callable (RLS helpers, the
+  `public_*` booking lookups, `create_company`, `join_company_as_member`).
+  No missing-RLS or exposed-table findings.
