@@ -24,7 +24,7 @@ export default async function AppLayout({
 
   const { data: account } = await supabase
     .from("accounts")
-    .select("companies(name)")
+    .select("companies(name, slug)")
     .limit(1)
     .maybeSingle();
 
@@ -36,6 +36,7 @@ export default async function AppLayout({
     <div className="flex flex-1 flex-col">
       <AppHeader
         companyName={account.companies?.name ?? ""}
+        bookingSlug={account.companies?.slug ?? ""}
         signOutAction={signOut.bind(null, locale)}
       />
       {children}

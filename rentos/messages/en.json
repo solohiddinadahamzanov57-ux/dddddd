@@ -45,7 +45,8 @@
     "fleet": "Fleet",
     "rentals": "Rentals",
     "reports": "Reports",
-    "settings": "Tariffs"
+    "settings": "Tariffs",
+    "booking": "Booking page"
   },
   "fleet": {
     "title": "Fleet",

@@ -11,9 +11,11 @@ const NAV_LINKS = [
 
 export function AppHeader({
   companyName,
+  bookingSlug,
   signOutAction,
 }: {
   companyName: string;
+  bookingSlug: string;
   signOutAction: () => Promise<void>;
 }) {
   const t = useTranslations("auth");
@@ -33,6 +35,14 @@ export function AppHeader({
               {tNav(link.key)}
             </Link>
           ))}
+          {bookingSlug && (
+            <Link
+              href={`/book/${bookingSlug}`}
+              className="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+            >
+              {tNav("booking")}
+            </Link>
+          )}
         </nav>
       </div>
       <form action={signOutAction}>

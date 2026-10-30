@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "db:bundle": "node scripts/build-setup-sql.mjs",
     "db:types": "supabase gen types typescript --db-url \"$DATABASE_URL\" --schema public > src/lib/supabase/database.types.ts && prettier --write src/lib/supabase/database.types.ts"
   },
   "dependencies": {
