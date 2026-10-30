@@ -4,9 +4,8 @@ import { revalidatePath } from "next/cache";
 
 import { redirect } from "@/i18n/navigation";
 import { tariffFormSchema } from "@/lib/billing/schemas";
+import { getStaffAccount } from "@/lib/supabase/account";
 import { createClient } from "@/lib/supabase/server";
-
-const STAFF_ROLES = ["owner", "receptionist", "worker"];
 
 export type TariffFormState = { error?: string };
 
@@ -21,16 +20,9 @@ export async function saveTariff(
     return redirect({ href: "/sign-in", locale });
   }
 
-  const { data: account } = await supabase
-    .from("accounts")
-    .select("company_id, role")
-    .limit(1)
-    .maybeSingle();
+  const account = await getStaffAccount(supabase, userData.user.id);
   if (!account) {
     return redirect({ href: "/onboarding", locale });
-  }
-  if (!STAFF_ROLES.includes(account.role)) {
-    return { error: "errors.generic" };
   }
 
   const parsed = tariffFormSchema.safeParse({

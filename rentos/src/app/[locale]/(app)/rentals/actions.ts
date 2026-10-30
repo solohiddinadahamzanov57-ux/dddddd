@@ -17,10 +17,9 @@ import {
   pickEffectiveTariff,
 } from "@/lib/billing/tariff";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getStaffAccount } from "@/lib/supabase/account";
 import { createClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/supabase/types";
-
-const STAFF_ROLES = ["owner", "receptionist", "worker"];
 
 type ActionState = { error?: string };
 
@@ -90,16 +89,9 @@ export async function startRental(
     return redirect({ href: "/sign-in", locale });
   }
 
-  const { data: account } = await supabase
-    .from("accounts")
-    .select("company_id, role")
-    .limit(1)
-    .maybeSingle();
+  const account = await getStaffAccount(supabase, userData.user.id);
   if (!account) {
     return redirect({ href: "/onboarding", locale });
-  }
-  if (!STAFF_ROLES.includes(account.role)) {
-    return { error: "errors.generic" };
   }
 
   const { data: vehicle } = await supabase

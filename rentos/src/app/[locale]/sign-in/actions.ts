@@ -3,6 +3,7 @@
 import { redirect } from "@/i18n/navigation";
 import { emailPasswordSchema } from "@/lib/auth/schemas";
 import { safeNextPath } from "@/lib/auth/next-path";
+import { getStaffAccount } from "@/lib/supabase/account";
 import { createClient } from "@/lib/supabase/server";
 
 export type SignInState = { error?: string };
@@ -32,6 +33,12 @@ export async function signIn(
     return redirect({ href: safeNext, locale });
   }
 
-  const { data: accounts } = await supabase.from("accounts").select("id").limit(1);
-  return redirect({ href: accounts && accounts.length > 0 ? "/fleet" : "/onboarding", locale });
+  const { data: signedIn } = await supabase.auth.getUser();
+  const staff = signedIn.user ? await getStaffAccount(supabase, signedIn.user.id) : null;
+  if (staff) {
+    return redirect({ href: "/fleet", locale });
+  }
+  // Customers (member accounts only) have no operator area; "/" is as far as they go without a booking link.
+  const { data: ownAccounts } = await supabase.from("accounts").select("id").limit(1);
+  return redirect({ href: ownAccounts && ownAccounts.length > 0 ? "/" : "/onboarding", locale });
 }

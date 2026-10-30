@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { formatMinor } from "@/lib/billing/money";
+import { getStaffAccount } from "@/lib/supabase/account";
 import { createClient } from "@/lib/supabase/server";
 
 function monthRange(monthParam: string | undefined): { from: Date; to: Date; label: string } {
@@ -27,11 +28,8 @@ export default async function ReportsPage({
   );
 
   const supabase = await createClient();
-  const { data: account } = await supabase
-    .from("accounts")
-    .select("company_id, companies(default_currency)")
-    .limit(1)
-    .maybeSingle();
+  const { data: userData } = await supabase.auth.getUser();
+  const account = userData.user ? await getStaffAccount(supabase, userData.user.id) : null;
   const currency = account?.companies?.default_currency ?? "USD";
 
   const { data: rows } = account

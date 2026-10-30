@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 
 import { AppHeader } from "@/components/layout/app-header";
 import { redirect } from "@/i18n/navigation";
+import { getStaffAccount } from "@/lib/supabase/account";
 import { createClient } from "@/lib/supabase/server";
 
 import { signOut } from "./actions";
@@ -22,11 +23,7 @@ export default async function AppLayout({
     return redirect({ href: "/sign-in", locale });
   }
 
-  const { data: account } = await supabase
-    .from("accounts")
-    .select("companies(name, slug)")
-    .limit(1)
-    .maybeSingle();
+  const account = await getStaffAccount(supabase, userData.user.id);
 
   if (!account) {
     return redirect({ href: "/onboarding", locale });

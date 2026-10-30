@@ -7,6 +7,7 @@ import { expenseFormSchema } from "@/lib/billing/schemas";
 import { randomBarcode } from "@/lib/vehicles/barcode";
 import { statusChangeSchema, vehicleFormSchema } from "@/lib/vehicles/schemas";
 import { modelGlbKeyFor } from "@/lib/vehicles/types";
+import { getStaffAccount } from "@/lib/supabase/account";
 import { createClient } from "@/lib/supabase/server";
 
 export type VehicleFormState = { error?: string; fieldErrors?: Record<string, string> };
@@ -58,11 +59,7 @@ export async function createVehicle(
     return redirect({ href: "/sign-in", locale });
   }
 
-  const { data: account } = await supabase
-    .from("accounts")
-    .select("company_id")
-    .limit(1)
-    .maybeSingle();
+  const account = await getStaffAccount(supabase, userData.user.id);
   if (!account) {
     return redirect({ href: "/onboarding", locale });
   }
@@ -205,7 +202,8 @@ export async function changeVehicleStatus(
       .select("company_id")
       .eq("id", vehicleId)
       .single();
-    const { data: account } = await supabase.from("accounts").select("id").limit(1).maybeSingle();
+    const { data: actor } = await supabase.auth.getUser();
+    const account = actor.user ? await getStaffAccount(supabase, actor.user.id) : null;
     if (vehicle) {
       await supabase.from("vehicle_logs").insert({
         company_id: vehicle.company_id,
@@ -265,7 +263,8 @@ export async function addExpense(
   if (!vehicle) {
     return { error: "errors.generic" };
   }
-  const { data: account } = await supabase.from("accounts").select("id").limit(1).maybeSingle();
+  const { data: actor } = await supabase.auth.getUser();
+  const account = actor.user ? await getStaffAccount(supabase, actor.user.id) : null;
 
   const { error } = await supabase.from("expenses").insert({
     company_id: vehicle.company_id,
