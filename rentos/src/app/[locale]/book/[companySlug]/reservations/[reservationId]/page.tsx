@@ -8,6 +8,7 @@ import { isStripeConfigured } from "@/lib/stripe/client";
 import { createClient } from "@/lib/supabase/server";
 
 import { CancelForm } from "./cancel-form";
+import { ContactlessSection } from "./contactless/section";
 
 const STATUS_LABEL_KEY: Record<string, string> = {
   pending: "statusPending",
@@ -39,7 +40,14 @@ export default async function ReservationConfirmationPage({
     notFound();
   }
 
-  const canCancel = reservation.status === "pending" || reservation.status === "confirmed";
+  const { data: startedRental } = await supabase
+    .from("rentals")
+    .select("id")
+    .eq("reservation_id", reservation.id)
+    .limit(1)
+    .maybeSingle();
+  const isOpen = reservation.status === "pending" || reservation.status === "confirmed";
+  const canCancel = isOpen && !startedRental;
 
   return (
     <div className="flex flex-1 flex-col">
@@ -63,6 +71,10 @@ export default async function ReservationConfirmationPage({
 
         {reservation.status === "pending" && !isStripeConfigured() && (
           <p className="text-sm text-[var(--color-text-muted)]">{t("paymentNotConfigured")}</p>
+        )}
+
+        {isOpen && (
+          <ContactlessSection locale={locale} companySlug={companySlug} reservation={reservation} />
         )}
 
         {canCancel && <CancelForm companySlug={companySlug} reservationId={reservation.id} />}

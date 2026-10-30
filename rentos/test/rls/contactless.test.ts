@@ -212,6 +212,19 @@ describe.skipIf(!pgAvailable)("contactless rental (Phase 4)", () => {
     });
   });
 
+  describe("customer contact details", () => {
+    it("records the sign-in email on the account, so staff can tell customers apart", async () => {
+      const guest = await admin.query<{ id: string }>(`insert into auth.users (email) values ('guest@p4.test') returning id`);
+      const guestClient = await connectAs(dbName, guest.rows[0]!.id);
+      await guestClient.query(`select set_config('request.jwt.claims', $1, false)`, [
+        JSON.stringify({ sub: guest.rows[0]!.id, role: "authenticated", email: "guest@p4.test" }),
+      ]);
+      await guestClient.query(`select public.join_company_as_member('contactless-co')`);
+      expect((await owner.query(`select email from public.accounts where user_id = $1`, [guest.rows[0]!.id])).rows[0].email).toBe("guest@p4.test");
+      await guestClient.end();
+    });
+  });
+
   describe("keybox codes", () => {
     it("customers, other customers and anon cannot read the keybox table", async () => {
       expect((await customer.query(`select * from public.vehicle_keyboxes`)).rowCount).toBe(0);
@@ -423,6 +436,12 @@ describe.skipIf(!pgAvailable)("contactless rental (Phase 4)", () => {
       const again = await customer.query(`select * from public.start_contactless_pickup($1)`, [reservationId]);
       expect(again.rows[0].keybox_code).toBe("4821");
       expect((await owner.query(`select count(*)::int as n from public.rentals where reservation_id = $1`, [reservationId])).rows[0].n).toBe(1);
+    });
+
+    it("a customer cannot cancel once the rental has started", async () => {
+      await expect(
+        customer.query(`update public.reservations set status = 'cancelled' where id = $1`, [reservationId]),
+      ).rejects.toThrow(/rental already started/);
     });
 
     it("someone else's reservation cannot be unlocked, and the code stops working after the rental ends", async () => {

@@ -95,7 +95,7 @@ Fuel and charge data: show the source of every value (manual, photo, OBD tracker
 **Phase 1 (done -- see `docs/DECISIONS.md`): fleet and 3D cards.** Vehicle CRUD, barcode generation and camera scanning, vehicle log, status changes, 3D card with status, fuel or charge, plate, mileage. Fleet dashboard with filters.
 **Phase 2 (done -- see `docs/DECISIONS.md`): rentals, timer, money.** Check-out and return flows, live timer and earnings, late fees, extras (equipment, services, insurance), expenses, revenue and profit per vehicle and per period, calendar to prevent double booking.
 **Phase 3 (done -- see `docs/DECISIONS.md`): public booking page.** Per-company page and link, search by dates and type, price calculation, reservation, Stripe payment, cancellation rules, notifications (email first, WhatsApp or Telegram later).
-Phase 4: contactless rental. ID and license verification through a provider adapter (Sumsub or Veriff style), deposit hold on the card, e-contract with signature, before and after photos with timestamps, keybox code released only after all checks pass.
+**Phase 4 (done -- see `docs/DECISIONS.md`): contactless rental.** ID and license verification through a provider adapter (Sumsub or Veriff style), deposit hold on the card, e-contract with signature, before and after photos with timestamps, keybox code released only after all checks pass.
 Phase 5: SaaS billing. Plans by vehicle count (Start, Growth, Pro), Stripe subscriptions, limits enforcement, free trial.
 Phase 6: marketplace. Cross-company search, commission on bookings, company approval, reviews from real completed rentals only.
 

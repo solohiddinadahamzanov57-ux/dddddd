@@ -33,6 +33,7 @@ export async function saveTariff(
     weeklyRateMinor: formData.get("weeklyRateMinor"),
     gracePeriodMinutes: formData.get("gracePeriodMinutes"),
     lateFeePerHourMinor: formData.get("lateFeePerHourMinor"),
+    depositMinor: formData.get("depositMinor") ?? 0,
   });
   if (!parsed.success) {
     return { error: "errors.generic" };
@@ -46,6 +47,7 @@ export async function saveTariff(
     weekly_rate_minor: parsed.data.weeklyRateMinor,
     grace_period_minutes: parsed.data.gracePeriodMinutes,
     late_fee_per_hour_minor: parsed.data.lateFeePerHourMinor,
+    deposit_minor: parsed.data.depositMinor,
   };
 
   // No single onConflict target covers both the plain unique(company_id,

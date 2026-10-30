@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { formatMinor } from "@/lib/billing/money";
 import { parseTariffSnapshot } from "@/lib/billing/tariff";
+import { PhotoGallery } from "@/components/reservations/photo-gallery";
 import { createClient } from "@/lib/supabase/server";
 
 import { LiveTimer } from "@/components/rentals/live-timer";
@@ -20,7 +21,9 @@ export default async function RentalDetailPage({
   const supabase = await createClient();
   const { data: rental } = await supabase
     .from("rentals")
-    .select("*, vehicles(model, license_plate), accounts!rentals_member_account_id_fkey(full_name)")
+    .select(
+      "*, vehicles(model, license_plate), accounts!rentals_member_account_id_fkey(full_name, email)",
+    )
     .eq("id", rentalId)
     .maybeSingle();
 
@@ -32,6 +35,14 @@ export default async function RentalDetailPage({
     .from("rental_extras")
     .select("id, item_type, label, cost_minor")
     .eq("rental_id", rentalId);
+
+  const { data: photos } = rental.reservation_id
+    ? await supabase
+        .from("handover_photos")
+        .select("id, phase, angle, storage_path, created_at")
+        .eq("reservation_id", rental.reservation_id)
+        .order("created_at", { ascending: true })
+    : { data: [] };
 
   const extrasTotal = (extras ?? []).reduce((sum, e) => sum + e.cost_minor, 0);
   const tariffSnapshot = parseTariffSnapshot(rental.tariff_snapshot);
@@ -46,7 +57,7 @@ export default async function RentalDetailPage({
           {rental.vehicles?.model}
         </Link>
         <h1 className="text-2xl text-[var(--color-text)]">
-          {t("rentalFor")} {rental.accounts?.full_name}
+          {t("rentalFor")} {rental.accounts?.full_name || rental.accounts?.email}
         </h1>
         <p className="tabular text-sm text-[var(--color-text-muted)]">
           {t("startedAt")} {new Date(rental.started_at).toLocaleString(locale)}
@@ -104,6 +115,21 @@ export default async function RentalDetailPage({
           <p className="text-xs text-[var(--color-text-muted)]">
             {t("returnedAt")} {rental.ended_at && new Date(rental.ended_at).toLocaleString(locale)}
           </p>
+        </section>
+      )}
+
+      {rental.reservation_id && (
+        <section className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-lg text-[var(--color-text)]">{t("photosTitle")}</h2>
+            <Link
+              href={`/reservations/${rental.reservation_id}`}
+              className="text-sm text-[var(--color-accent)] underline"
+            >
+              {t("viewReservation")}
+            </Link>
+          </div>
+          <PhotoGallery supabase={supabase} photos={photos ?? []} locale={locale} />
         </section>
       )}
 

@@ -15,6 +15,23 @@ export async function notifyByEmail(params: {
   subject: string;
   text: string;
 }): Promise<void> {
+  // A failed notification must never fail the action that triggered it (a
+  // cancellation or confirmation has already been saved by the time we get here).
+  try {
+    await send(params);
+  } catch (error) {
+    console.error("notifyByEmail failed:", error);
+  }
+}
+
+async function send(params: {
+  companyId: string;
+  accountId: string;
+  type: NotificationType;
+  to: string;
+  subject: string;
+  text: string;
+}): Promise<void> {
   const admin = createAdminClient();
   let status: "sent" | "failed" = "sent";
 

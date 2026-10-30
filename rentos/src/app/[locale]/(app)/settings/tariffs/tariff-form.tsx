@@ -16,6 +16,7 @@ export interface TariffFormDefaults {
   weeklyRateMinor?: number;
   gracePeriodMinutes?: number;
   lateFeePerHourMinor?: number;
+  depositMinor?: number;
 }
 
 const toDisplay = (minor?: number) => (minor !== undefined ? String(minor / 100) : "");
@@ -97,11 +98,19 @@ export function TariffForm({
         />
       </div>
 
+      <Field
+        label={t("depositAmount")}
+        name="depositMinorDisplay"
+        type="number"
+        defaultValue={toDisplay(defaults?.depositMinor ?? 0)}
+      />
+
       {/* Hidden minor-unit fields the visible dollar/euro inputs above keep in sync client-side. */}
       <MinorSync displayName="hourlyRateMinorDisplay" hiddenName="hourlyRateMinor" />
       <MinorSync displayName="dailyRateMinorDisplay" hiddenName="dailyRateMinor" />
       <MinorSync displayName="weeklyRateMinorDisplay" hiddenName="weeklyRateMinor" />
       <MinorSync displayName="lateFeePerHourMinorDisplay" hiddenName="lateFeePerHourMinor" />
+      <MinorSync displayName="depositMinorDisplay" hiddenName="depositMinor" />
 
       {state.error && <FormError message={tErrors(state.error)} />}
       <SubmitButton>{pending ? "…" : t("save")}</SubmitButton>

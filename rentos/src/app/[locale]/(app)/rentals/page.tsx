@@ -13,7 +13,7 @@ export default async function RentalsPage({ params }: PageProps<"/[locale]/renta
   const { data: rentals } = await supabase
     .from("rentals")
     .select(
-      "id, status, started_at, ended_at, total_minor, currency, vehicles(model, license_plate), accounts!rentals_member_account_id_fkey(full_name)",
+      "id, status, started_at, ended_at, total_minor, currency, vehicles(model, license_plate), accounts!rentals_member_account_id_fkey(full_name, email)",
     )
     .order("started_at", { ascending: false })
     .limit(50);
@@ -38,7 +38,7 @@ export default async function RentalsPage({ params }: PageProps<"/[locale]/renta
                 className="flex items-center justify-between rounded-md border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-3 text-sm"
               >
                 <span className="text-[var(--color-text)]">
-                  {r.vehicles?.model} &middot; {r.accounts?.full_name}
+                  {r.vehicles?.model} &middot; {r.accounts?.full_name || r.accounts?.email}
                 </span>
                 <span className="tabular text-[var(--color-text-muted)]">
                   {new Date(r.started_at).toLocaleString(locale)}
@@ -62,7 +62,7 @@ export default async function RentalsPage({ params }: PageProps<"/[locale]/renta
                 className="flex items-center justify-between rounded-md border border-[var(--color-border)] p-3 text-sm"
               >
                 <span className="text-[var(--color-text)]">
-                  {r.vehicles?.model} &middot; {r.accounts?.full_name}
+                  {r.vehicles?.model} &middot; {r.accounts?.full_name || r.accounts?.email}
                 </span>
                 <span className="tabular text-[var(--color-text-muted)]">
                   {formatMinor(r.total_minor, r.currency, locale)}

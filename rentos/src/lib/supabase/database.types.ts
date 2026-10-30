@@ -7,6 +7,7 @@ export type Database = {
         Row: {
           company_id: string;
           created_at: string;
+          email: string | null;
           full_name: string;
           id: string;
           phone: string | null;
@@ -17,6 +18,7 @@ export type Database = {
         Insert: {
           company_id: string;
           created_at?: string;
+          email?: string | null;
           full_name?: string;
           id?: string;
           phone?: string | null;
@@ -26,6 +28,7 @@ export type Database = {
         Update: {
           company_id?: string;
           created_at?: string;
+          email?: string | null;
           full_name?: string;
           id?: string;
           phone?: string | null;
@@ -1125,6 +1128,7 @@ export type Database = {
         Returns: {
           company_id: string;
           created_at: string;
+          email: string | null;
           full_name: string;
           id: string;
           phone: string | null;
@@ -1176,6 +1180,16 @@ export type Database = {
           subtype: string;
           type: Database["public"]["Enums"]["vehicle_type"];
           vehicle_id: string;
+        }[];
+      };
+      quote_reservation: {
+        Args: { p_end_at: string; p_start_at: string; p_vehicle_id: string };
+        Returns: {
+          currency: string;
+          subtotal_minor: number;
+          tariff_snapshot: Json;
+          tax_minor: number;
+          total_minor: number;
         }[];
       };
       render_rental_agreement: {

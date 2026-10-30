@@ -8,7 +8,7 @@ plan, and `docs/DECISIONS.md` for why things are built the way they are.
 > unrelated product (Driver Desk, at the repo root). They're independent;
 > nothing here touches it and nothing there touches this.
 
-**Status: Phases 0-3 complete.** Sign up, create a company (isolated by
+**Status: Phases 0-4 complete.** Sign up, create a company (isolated by
 Postgres Row Level Security -- proven by a test that runs the real
 migrations against a throwaway database, see `test/rls/`), manage a fleet
 (add/edit/delete vehicles, scan a barcode with the camera to find one,
@@ -22,7 +22,12 @@ from ever double-booking the same vehicle. On top of that, a public,
 no-login-required booking page per company (`/book/[companySlug]`): search
 real availability by date and type, get a priced quote, reserve, and pay
 with Stripe Checkout (test mode) -- all without exposing a single table to
-the `anon` role directly (see `docs/DECISIONS.md`).
+the `anon` role directly (see `docs/DECISIONS.md`). Phase 4 adds contactless
+pickup: a customer finishes an ID check (reviewed by staff), signs the rental
+agreement, holds the deposit, and photographs the vehicle, and only then can open
+the key box, which also starts the rental timer. One database function decides
+whether every check has passed, and it is tested against a real Postgres
+(`test/rls/contactless.test.ts`).
 
 ## Stack
 

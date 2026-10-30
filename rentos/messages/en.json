@@ -40,14 +40,18 @@
     "rentalNotActive": "This rental has already been returned.",
     "odometerTooLow": "The return odometer reading can't be less than the pickup reading.",
     "reservationNotCancellable": "This reservation can't be cancelled.",
-    "cancellationWindowPassed": "This reservation is too close to its start time to cancel online — please contact the company directly."
+    "cancellationWindowPassed": "This reservation is too close to its start time to cancel online — please contact the company directly.",
+    "contactlessChecksIncomplete": "Not every step is done yet. Check the list and try again.",
+    "signatureRequired": "Type your full name and tick the box to sign.",
+    "photoUploadFailed": "The photo did not upload. Try again."
   },
   "nav": {
     "fleet": "Fleet",
     "rentals": "Rentals",
     "reports": "Reports",
     "settings": "Tariffs",
-    "booking": "Booking page"
+    "booking": "Booking page",
+    "reservations": "Reservations"
   },
   "fleet": {
     "title": "Fleet",
@@ -133,7 +137,8 @@
       "service": "Service",
       "note": "Note",
       "pickup": "Picked up",
-      "return": "Returned"
+      "return": "Returned",
+      "keybox_release": "Key code shown"
     },
     "checkOut": "Check out",
     "viewActiveRental": "View active rental",
@@ -149,6 +154,14 @@
       "fuel": "Fuel",
       "wash": "Wash",
       "fine": "Fine"
+    },
+    "keybox": {
+      "title": "Key box code",
+      "description": "Customers see this code only after every pickup check is done. Leave it empty if you hand keys over in person.",
+      "codeLabel": "Code",
+      "save": "Save code",
+      "clear": "Remove code",
+      "isSet": "A code is set."
     }
   },
   "rentals": {
@@ -187,7 +200,12 @@
     "lateFee": "Late fee",
     "tax": "Tax",
     "total": "Total",
-    "returnedAt": "Returned"
+    "returnedAt": "Returned",
+    "photosTitle": "Photos",
+    "pickupPhotos": "At pickup",
+    "returnPhotos": "At return",
+    "noPhotos": "No photos yet.",
+    "viewReservation": "Open reservation"
   },
   "tariffs": {
     "title": "Tariffs",
@@ -203,7 +221,8 @@
     "dailyRate": "Daily rate",
     "weeklyRate": "Weekly rate",
     "lateFeePerHour": "Late fee per hour",
-    "save": "Save"
+    "save": "Save",
+    "depositAmount": "Security deposit (0 for none)"
   },
   "reports": {
     "title": "Reports",
@@ -240,6 +259,172 @@
     "statusNoShow": "No-show",
     "paymentNotConfigured": "Online payment isn't set up for this company yet — they'll confirm your reservation directly.",
     "cancelReservation": "Cancel reservation",
-    "cancelConfirm": "Cancel this reservation?"
+    "cancelConfirm": "Cancel this reservation?",
+    "deposit": "Deposit",
+    "depositNote": "Held on your card, not charged. It is released after you return the vehicle, less anything owed for damage, fines or fees."
+  },
+  "contactless": {
+    "title": "Contactless pickup",
+    "intro": "Finish these steps and you can collect the vehicle yourself, with no meeting needed.",
+    "waitingConfirm": "The company still has to confirm this reservation. You can start the steps below. Photos and the key box open once it is confirmed.",
+    "step": "Step {n}",
+    "done": "Done",
+    "todo": "To do",
+    "waitingCompany": "Waiting for the company",
+    "id": {
+      "title": "ID and driving licence",
+      "description": "Show your licence to the company, in person or on a video call. They mark it as checked. We do not store pictures or numbers from your documents.",
+      "request": "Ask for an ID check",
+      "requested": "Requested. The company will check it before pickup.",
+      "approved": "Approved",
+      "rejected": "Not approved. Contact the company.",
+      "licenceShort": "Your licence expires before the rental ends. Contact the company."
+    },
+    "agreement": {
+      "title": "Rental agreement",
+      "description": "Read the agreement, then type your full name to sign it.",
+      "nameLabel": "Full name",
+      "agree": "I have read the agreement and I accept it",
+      "sign": "Sign agreement",
+      "signedBy": "Signed by {name} on {date}",
+      "contract": "Agreement text"
+    },
+    "deposit": {
+      "title": "Deposit",
+      "none": "No deposit is needed for this vehicle.",
+      "amount": "A deposit of {amount} is held on your card and released after you return the vehicle, less anything owed for damage, fines or fees.",
+      "pay": "Hold the deposit on my card",
+      "held": "Deposit held",
+      "manual": "Online card holds are not set up for this company. They will take the deposit another way and mark it received.",
+      "waiting": "Waiting for the company to confirm the deposit.",
+      "notify": "Tell the company I'm ready for the deposit"
+    },
+    "photos": {
+      "title": "Photos of the vehicle",
+      "description": "Take all five photos before you drive off. They are saved with the time and are the record of the vehicle's condition.",
+      "take": "Take photo",
+      "retake": "Retake",
+      "uploading": "Uploading…",
+      "count": "{done} of {total} photos",
+      "angle": {
+        "front": "Front",
+        "rear": "Rear",
+        "left": "Left side",
+        "right": "Right side",
+        "dashboard": "Dashboard, fuel and mileage",
+        "interior": "Interior (optional)"
+      }
+    },
+    "unlock": {
+      "title": "Key box",
+      "locked": "The key box opens when every step above is done.",
+      "opensAt": "You can open the key box from {time}.",
+      "noKeybox": "The company has not set a key box code for this vehicle yet. Contact them.",
+      "unlock": "Open key box and start rental",
+      "show": "Show the key code again",
+      "code": "Key box code",
+      "started": "Your rental has started. Put the key back in the key box when you are done.",
+      "finished": "This rental is finished."
+    },
+    "returnPhotos": {
+      "title": "Return photos",
+      "description": "Before you leave the vehicle, take these photos. The company will close the rental."
+    }
+  },
+  "reservations": {
+    "title": "Reservations",
+    "empty": "No open reservations.",
+    "unknownCustomer": "Customer",
+    "status": {
+      "pending": "Waiting for confirmation",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "no_show": "No-show"
+    },
+    "confirm": "Confirm reservation",
+    "cancel": "Cancel reservation",
+    "cancelConfirm": "Cancel this reservation?",
+    "checklist": "Pickup checklist",
+    "ready": "Ready for contactless pickup",
+    "notReady": "Not ready yet",
+    "chip": {
+      "id": "ID",
+      "agreement": "Agreement",
+      "deposit": "Deposit",
+      "photos": "Photos"
+    },
+    "state": {
+      "none": "none",
+      "pending": "to review",
+      "approved": "approved",
+      "rejected": "rejected",
+      "signed": "signed",
+      "unsigned": "not signed",
+      "held": "held",
+      "released": "released",
+      "captured": "kept",
+      "notNeeded": "not needed",
+      "requested": "requested"
+    },
+    "id": {
+      "title": "ID check",
+      "none": "The customer has not asked for an ID check yet.",
+      "pending": "Waiting for your review.",
+      "approved": "Approved. Licence valid until {date}.",
+      "rejected": "Rejected.",
+      "help": "Check the licence in person or on a video call. Only the result and the expiry date are stored.",
+      "licenceValidUntil": "Licence valid until",
+      "ageConfirmed": "The customer is old enough to rent and the licence is valid",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "agreement": {
+      "title": "Agreement",
+      "unsigned": "Not signed yet.",
+      "signed": "Signed by {name} on {date}.",
+      "text": "Agreement text"
+    },
+    "deposit": {
+      "title": "Deposit",
+      "none": "No deposit for this vehicle.",
+      "notRequested": "Not started by the customer yet. Amount: {amount}.",
+      "pending": "Waiting. Amount: {amount}.",
+      "held": "Held. Amount: {amount}.",
+      "released": "Released. Amount: {amount}.",
+      "captured": "Part or all kept. Amount held was {amount}.",
+      "markReceived": "Mark deposit received",
+      "release": "Release deposit",
+      "capture": "Keep part of the deposit",
+      "captureAmount": "Amount to keep",
+      "viaCard": "Held on the customer's card.",
+      "viaManual": "Taken by you, outside the app."
+    },
+    "photos": {
+      "title": "Photos",
+      "pickup": "At pickup",
+      "return": "At return",
+      "none": "No photos yet.",
+      "angle": {
+        "front": "Front",
+        "rear": "Rear",
+        "left": "Left side",
+        "right": "Right side",
+        "dashboard": "Dashboard",
+        "interior": "Interior"
+      }
+    },
+    "keybox": {
+      "set": "Key box code is set.",
+      "missing": "No key box code yet. Set one on the vehicle page."
+    },
+    "window": {
+      "open": "Pickup window is open.",
+      "opensAt": "Pickup window opens {time}."
+    },
+    "rental": {
+      "started": "The rental has started.",
+      "open": "Open rental"
+    }
   }
 }

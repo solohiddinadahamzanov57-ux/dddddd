@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 
 const NAV_LINKS = [
   { href: "/fleet", key: "fleet" },
+  { href: "/reservations", key: "reservations" },
   { href: "/rentals", key: "rentals" },
   { href: "/reports", key: "reports" },
   { href: "/settings/tariffs", key: "settings" },

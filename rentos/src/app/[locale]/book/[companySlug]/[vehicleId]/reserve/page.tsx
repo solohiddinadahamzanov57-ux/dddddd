@@ -64,6 +64,14 @@ export default async function ReservePage({
           <p className="tabular text-lg font-medium text-[var(--color-text)]">
             {formatMinor(quote.totalMinor, tariff.currency, locale)}
           </p>
+          {tariff.deposit_minor > 0 && (
+            <p className="tabular text-sm text-[var(--color-text)]">
+              {t("deposit")}: {formatMinor(tariff.deposit_minor, tariff.currency, locale)}
+              <span className="block text-xs text-[var(--color-text-muted)]">
+                {t("depositNote")}
+              </span>
+            </p>
+          )}
         </section>
         <ConfirmForm
           locale={locale}

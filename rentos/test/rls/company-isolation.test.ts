@@ -171,6 +171,13 @@ describe.skipIf(!pgAvailable)("company isolation (RLS)", () => {
       )
     ).rows[0] as { id: string };
 
+    // Customers can only book a company that has prices (the database prices every reservation itself).
+    await clientA.query(
+      `insert into public.tariffs (company_id, currency, hourly_rate_minor, daily_rate_minor, weekly_rate_minor, late_fee_per_hour_minor)
+       values ($1, 'USD', 1000, 5000, 25000, 1500)`,
+      [companyA.id],
+    );
+
     // B joins company A as a member. Invite/self-signup flows are a later
     // phase, so for this test the account is seeded directly via the admin
     // connection -- accounts has no client-facing INSERT policy at all (see

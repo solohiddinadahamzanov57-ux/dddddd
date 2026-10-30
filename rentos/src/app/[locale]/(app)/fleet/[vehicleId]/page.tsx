@@ -10,8 +10,9 @@ import { Link } from "@/i18n/navigation";
 import { formatMinor } from "@/lib/billing/money";
 import { createClient } from "@/lib/supabase/server";
 
-import { addExpense, updateVehicle } from "../actions";
+import { addExpense, saveKeyboxCode, updateVehicle } from "../actions";
 import { ExpenseForm } from "./expense-form";
+import { KeyboxForm } from "./keybox-form";
 import { DeleteButton, StatusControl } from "./status-control";
 import { VehicleLog } from "./vehicle-log";
 
@@ -48,6 +49,12 @@ export default async function VehicleDetailPage({
           .eq("status", "active")
           .maybeSingle()
       : { data: null };
+
+  const { data: keybox } = await supabase
+    .from("vehicle_keyboxes")
+    .select("code")
+    .eq("vehicle_id", vehicleId)
+    .maybeSingle();
 
   const { data: expenses } = await supabase
     .from("expenses")
@@ -123,6 +130,11 @@ export default async function VehicleDetailPage({
             levelSource: vehicle.level_source,
           }}
         />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg text-[var(--color-text)]">{t("keybox.title")}</h2>
+        <KeyboxForm action={saveKeyboxCode.bind(null, vehicle.id)} currentCode={keybox?.code} />
       </section>
 
       <section className="flex flex-col gap-3">

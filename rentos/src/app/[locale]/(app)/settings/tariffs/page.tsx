@@ -38,6 +38,7 @@ export default async function TariffsSettingsPage({
                   weeklyRateMinor: defaultTariff.weekly_rate_minor,
                   gracePeriodMinutes: defaultTariff.grace_period_minutes,
                   lateFeePerHourMinor: defaultTariff.late_fee_per_hour_minor,
+                  depositMinor: defaultTariff.deposit_minor,
                 }
               : undefined
           }
@@ -59,6 +60,7 @@ export default async function TariffsSettingsPage({
               weeklyRateMinor: tf.weekly_rate_minor,
               gracePeriodMinutes: tf.grace_period_minutes,
               lateFeePerHourMinor: tf.late_fee_per_hour_minor,
+              depositMinor: tf.deposit_minor,
             }}
           />
         ))}

@@ -29,7 +29,7 @@ export default async function CheckoutPage({
 
   const { data: members } = await supabase
     .from("accounts")
-    .select("id, full_name")
+    .select("id, full_name, email")
     .eq("role", "member")
     .order("full_name");
 
@@ -37,7 +37,13 @@ export default async function CheckoutPage({
     <main className="mx-auto w-full max-w-lg flex-1 px-4 py-8">
       <h1 className="mb-1 text-2xl text-[var(--color-text)]">{t("checkoutTitle")}</h1>
       <p className="mb-6 text-sm text-[var(--color-text-muted)]">{vehicle.model}</p>
-      <CheckoutForm action={startRental.bind(null, locale, vehicleId)} members={members ?? []} />
+      <CheckoutForm
+        action={startRental.bind(null, locale, vehicleId)}
+        members={(members ?? []).map((m) => ({
+          id: m.id,
+          full_name: m.full_name || m.email || "",
+        }))}
+      />
     </main>
   );
 }

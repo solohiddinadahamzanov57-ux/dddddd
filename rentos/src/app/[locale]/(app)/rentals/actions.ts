@@ -64,6 +64,7 @@ async function resolveOrCreateMember(
       company_id: companyId,
       role: "member",
       full_name: input.newMemberName,
+      email: input.newMemberEmail,
       phone: input.newMemberPhone || null,
     })
     .select("id")
@@ -270,6 +271,15 @@ export async function completeRental(
     .from("vehicles")
     .update({ status: "available", odometer: parsed.data.odometerEnd })
     .eq("id", rental.vehicle_id);
+
+  // A contactless rental came from a reservation; it is finished now too.
+  if (rental.reservation_id) {
+    await supabase
+      .from("reservations")
+      .update({ status: "completed" })
+      .eq("id", rental.reservation_id)
+      .eq("status", "confirmed");
+  }
 
   revalidatePath("/fleet");
   revalidatePath(`/fleet/${rental.vehicle_id}`);

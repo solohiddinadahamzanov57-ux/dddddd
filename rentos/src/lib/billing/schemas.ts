@@ -10,6 +10,7 @@ export const tariffFormSchema = z.object({
   weeklyRateMinor: z.coerce.number().int().min(0),
   gracePeriodMinutes: z.coerce.number().int().min(0).max(1440),
   lateFeePerHourMinor: z.coerce.number().int().min(0),
+  depositMinor: z.coerce.number().int().min(0).default(0),
 });
 
 export const extraItemSchema = z.object({

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { redirect } from "@/i18n/navigation";
 import { expenseFormSchema } from "@/lib/billing/schemas";
+import { keyboxCodeSchema } from "@/lib/contactless/schemas";
 import { randomBarcode } from "@/lib/vehicles/barcode";
 import { statusChangeSchema, vehicleFormSchema } from "@/lib/vehicles/schemas";
 import { modelGlbKeyFor } from "@/lib/vehicles/types";
@@ -282,6 +283,44 @@ export async function addExpense(
     return { error: "errors.generic" };
   }
 
+  revalidatePath(`/fleet/${vehicleId}`);
+  return {};
+}
+
+export async function saveKeyboxCode(
+  vehicleId: string,
+  _prevState: { error?: string },
+  formData: FormData,
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) return { error: "errors.generic" };
+  const account = await getStaffAccount(supabase, userData.user.id);
+  if (!account) return { error: "errors.generic" };
+
+  const { data: vehicle } = await supabase
+    .from("vehicles")
+    .select("company_id")
+    .eq("id", vehicleId)
+    .maybeSingle();
+  if (!vehicle) return { error: "errors.generic" };
+
+  const clear = formData.get("intent") === "clear";
+  const parsed = keyboxCodeSchema.safeParse(formData.get("code"));
+  if (!clear && !parsed.success) return { error: "errors.generic" };
+
+  const { error } = clear
+    ? await supabase.from("vehicle_keyboxes").delete().eq("vehicle_id", vehicleId)
+    : await supabase
+        .from("vehicle_keyboxes")
+        .upsert(
+          { vehicle_id: vehicleId, company_id: vehicle.company_id, code: parsed.data! },
+          { onConflict: "vehicle_id" },
+        );
+  if (error) {
+    console.error("saveKeyboxCode failed:", error);
+    return { error: "errors.generic" };
+  }
   revalidatePath(`/fleet/${vehicleId}`);
   return {};
 }

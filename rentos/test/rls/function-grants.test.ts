@@ -51,6 +51,7 @@ describe.skipIf(!pgAvailable)("authenticated-only functions reject anon", () => 
     ["forbid_company_id_change", `select public.forbid_company_id_change()`],
     ["accounts_guard_update", `select public.accounts_guard_update()`],
     ["log_vehicle_status_change", `select public.log_vehicle_status_change()`],
+    ["reservations_guard_member_writes", `select public.reservations_guard_member_writes()`],
   ];
 
   for (const [name, sql] of deniedForAnon) {

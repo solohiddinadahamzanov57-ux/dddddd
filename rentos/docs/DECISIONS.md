@@ -354,3 +354,76 @@ DEFINER`)**, unlike `create_company()` or the auth-helper functions.
   DEFINER functions that are intentionally callable (RLS helpers, the
   `public_*` booking lookups, `create_company`, `join_company_as_member`).
   No missing-RLS or exposed-table findings.
+
+## Phase 4: contactless rental
+
+- **One rule, in the database.** `contactless_status(reservation)` is the single
+  source of truth for "is this customer allowed to collect the vehicle": reservation
+  confirmed, ID approved with a licence that outlasts the rental, agreement signed,
+  deposit held (if the tariff has one), five pickup photos whose files really exist
+  in storage, and a key box code configured. `start_contactless_pickup()` re-checks it,
+  rebuilds the tariff snapshot from the company's own tariffs, starts the rental on
+  server time, and only then returns the key code. Nothing in the browser can skip a
+  step, and the timer can never be skipped either: the code is never revealed without
+  the rental starting in the same transaction.
+- **Customers can no longer write their own reservation's status or price.** Before
+  this, RLS let a customer `update reservations set status = 'confirmed'` or
+  `total_minor = 0` straight through the API. A trigger now forces customer inserts to
+  `pending`, recomputes subtotal, tax, total, currency and the tariff snapshot from the
+  company's tariffs (`quote_reservation()`, kept in step with `src/lib/billing/fees.ts`
+  by a parity test over 44 durations), and limits updates to cancelling. It also refuses
+  a reservation that points at another company's vehicle or customer. Cancelling is
+  refused once the rental has started.
+- **ID check = staff review, behind an adapter.** `IdentityProvider` is the seam for
+  Sumsub or Veriff. Today the customer asks and an operator checks the licence in
+  person or over video. Only the outcome is stored: approved or rejected, the licence
+  expiry date and an "age confirmed" flag. No document images, no document numbers
+  (legal checklist: collect no unnecessary data). A vendor implementation must write
+  its result from a signature-verified webhook with the service role; the customer-facing
+  insert policy only accepts a plain pending request.
+- **Agreement text is built in the database.** `contract_templates` holds versioned
+  English and Russian text; `render_rental_agreement()` fills it in and
+  `sign_rental_agreement()` stores the exact text, its SHA-256, the typed name and the
+  time. A customer cannot sign different text, and the signed record cannot be edited or
+  deleted by anyone signed in. **The template is a draft for the user's lawyer to
+  review**; its first line says so. Amounts are formatted with two decimals, which is
+  right for every currency currently offered.
+- **Deposit = card authorisation, not a charge.** Stripe Checkout with manual capture
+  (`DepositProvider`); the signature-verified webhook marks it held once the authorised
+  amount covers the deposit. Staff can release it or keep part of it. Authorisations
+  last about seven days, so longer rentals need the deposit taken another way. Without
+  Stripe keys, staff mark the deposit received by hand. The required amount comes from
+  the tariff, never from a column the customer can write. The deposit is shown on the
+  quote and booking pages before payment.
+- **Photos are append-only evidence in a private bucket.** Path
+  `company/reservation/phase/random.jpg`, enforced by a CHECK constraint and a storage
+  policy; 5 MB cap, JPEG/PNG/WebP only; phones' photos are shrunk to 1600 px in the
+  browser first. Rows and files can be inserted but not updated or deleted by signed-in
+  users. Staff view them through one-hour signed links. A photo row only counts if the
+  file exists in storage, so a customer cannot satisfy the check by inserting rows alone.
+- **Key box codes sit in a staff-only table** (`vehicle_keyboxes`), never on `vehicles`
+  (which every customer of the company can read), and each reveal is logged to the
+  vehicle log. They are stored as plain text protected by RLS and disk-level encryption
+  at rest; application-level encryption would need a key store (Supabase Vault or a KMS),
+  deferred.
+- **Customer email on the account.** Staff need to tell customers apart and the sign-in
+  email lives in `auth.users`, which the app cannot read. `accounts.email` is copied from
+  the caller's own token when an account is created or joined (and backfilled once).
+- **Fixes found on the way.** Staff account lookups used `from("accounts").limit(1)`,
+  which can return a customer's row because staff can read every account in their
+  company; replaced everywhere by `getStaffAccount()` (own user id + staff role), and
+  the operator area now sends non-staff to onboarding. `notifyByEmail` can no longer
+  fail the action that triggered it. The trigger functions are no longer callable over
+  the API. Safe response headers (nosniff, frame deny, referrer policy, permissions
+  policy) were added.
+- **Testing without a Supabase stack.** The sandbox cannot reach Supabase or run
+  downloaded binaries, so the logged-in screens are covered by server-render smoke tests
+  (`src/test/ssr-smoke.test.tsx`): they render each screen in plain Node with canned data
+  in English and Russian and fail on a crash or a missing translation. That is the class
+  of bug that once took the Fleet page down.
+- **Not done in Phase 4:** a Content-Security-Policy (needs to allow Next's inline
+  bootstrap, `<model-viewer>`'s workers and Supabase storage, and must be tested in a real
+  browser first); self-service return (customers upload return photos, staff close the
+  rental); contactless flow for walk-in rentals (photos hang off reservations); a real ID
+  vendor; photo EXIF/liveness checks; deposit automation beyond Stripe holds; email
+  reminders for the pickup steps.

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import Stripe from "stripe";
 
 import { getServerEnv } from "@/lib/env";
+import { markDepositHeld } from "@/lib/contactless/deposit-webhook";
 import { notifyByEmail } from "@/lib/notifications/send";
 import { getStripe } from "@/lib/stripe/client";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -38,6 +39,18 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   if (!reservationId) return;
 
   const admin = createAdminClient();
+
+  // A card hold for the security deposit, not a payment for the rental.
+  if (session.metadata?.kind === "deposit") {
+    const outcome = await markDepositHeld(admin, session);
+    if (outcome === "amount_mismatch") {
+      console.error(
+        "Stripe webhook: deposit authorisation smaller than the deposit",
+        reservationId,
+      );
+    }
+    return;
+  }
 
   const { error: paymentError } = await admin
     .from("payments")

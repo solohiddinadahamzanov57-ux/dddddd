@@ -85,7 +85,16 @@ export default async function BookingVehiclePage({
               <dt>{t("total")}</dt>
               <dd>{formatMinor(quote.totalMinor, tariff.currency, locale)}</dd>
             </div>
+            {tariff.deposit_minor > 0 && (
+              <div className="mt-2 flex justify-between border-t border-[var(--color-border)] pt-2 text-[var(--color-text)]">
+                <dt>{t("deposit")}</dt>
+                <dd>{formatMinor(tariff.deposit_minor, tariff.currency, locale)}</dd>
+              </div>
+            )}
           </dl>
+          {tariff.deposit_minor > 0 && (
+            <p className="text-xs text-[var(--color-text-muted)]">{t("depositNote")}</p>
+          )}
           <p className="text-xs text-[var(--color-text-muted)]">{t("priceDisclaimer")}</p>
         </section>
 
