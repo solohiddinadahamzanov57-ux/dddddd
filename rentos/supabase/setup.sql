@@ -2196,5 +2196,9 @@ $$;
 -- CREATE OR REPLACE keeps the existing grants, so anon stays locked out.
 
 
+-- ===== 20260106000700_pin_contract_version_search_path.sql =====
+alter function public.current_contract_version() set search_path = public;
+
+
 -- Make the API pick up the new tables/functions immediately.
 notify pgrst, 'reload schema';
